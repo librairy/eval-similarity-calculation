@@ -24,4 +24,9 @@ public class KMeansAlgorithm implements Algorithm {
 
         return clusters.stream().flatMap(cluster -> cluster.getPoints().stream().map(point -> new DistributionExpression(cluster.toString(), point.getDistribution()))).collect(Collectors.toList());
     }
+
+    @Override
+    public String toString() {
+        return "KMeans Algorithm";
+    }
 }

@@ -22,4 +22,9 @@ public class EntropyAlgorithm implements Algorithm {
     public List<DistributionExpression> getShapesFrom(List<DirichletDistribution> distributions) {
         return distributions.stream().map(v -> new TopExpression(top, v)).collect(Collectors.toList());
     }
+
+    @Override
+    public String toString() {
+        return "Entropy-" + top + " Algorithm";
+    }
 }

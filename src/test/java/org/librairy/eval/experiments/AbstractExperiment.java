@@ -36,7 +36,7 @@ public abstract class AbstractExperiment extends AbstractEvaluation{
     }
 
     public Result evaluationOf(Integer numVectors, Integer numTopics, Integer numTopSimilar, Double threshold, List<DirichletDistribution> vectors){
-        return evaluationOf(numVectors, numTopics, numTopSimilar, threshold, vectors, createGoldStandard(vectors, threshold, numTopSimilar), (a) -> getShapesFrom(a));
+        return evaluationOf(numVectors, numTopics, threshold, vectors, createGoldStandard(vectors, threshold), (a) -> getShapesFrom(a));
     }
 
 }

@@ -14,8 +14,6 @@ public class Result {
 
     Integer topics;
 
-    Integer top;
-
     Double minScore;
 
     Integer tp;
@@ -36,6 +34,8 @@ public class Result {
 
     Integer calculatedSimilarities;
 
+    Integer minimumSimilarities;
+
     Long time;
 
 
@@ -44,7 +44,7 @@ public class Result {
     }
 
     public Double getCost(){
-        return (Double.valueOf(calculatedSimilarities) - (Double.valueOf(size)*Double.valueOf(top))) / (Double.valueOf(totalSimilarities) - (Double.valueOf(size)*Double.valueOf(top)));
+        return (Double.valueOf(calculatedSimilarities) - (Double.valueOf(minimumSimilarities))) / (Double.valueOf(totalSimilarities) - (Double.valueOf(minimumSimilarities)));
     }
 
     public Double getEfficiency(){

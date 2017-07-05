@@ -16,4 +16,11 @@ public class GradientAlgorithm implements Algorithm {
     public List<DistributionExpression> getShapesFrom(List<DirichletDistribution> distributions) {
         return distributions.stream().map(v -> new GradientExpression(0.99, v)).collect(Collectors.toList());
     }
+
+
+    @Override
+    public String toString() {
+        return "Gradient Algorithm";
+    }
+
 }

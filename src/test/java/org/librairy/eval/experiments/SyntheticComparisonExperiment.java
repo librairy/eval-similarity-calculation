@@ -68,10 +68,10 @@ public class SyntheticComparisonExperiment extends AbstractExperiment {
             Integer recommendedTopics   = Double.valueOf(2*Math.sqrt(size/2)).intValue();
             Integer numTopics           = recommendedTopics != 0? recommendedTopics : 2;
             List<DirichletDistribution> corpus = createSampling(size, numTopics);
-            Map<String, List<Similarity>> goldStandard = createGoldStandard(corpus, minScore, numTopSimilar);
-            summary.append("gradient\t").append(evaluationOf(size, numTopics, numTopSimilar, minScore,corpus,goldStandard,gradientBased)).append("\n");
-            summary.append("entropy\t").append(evaluationOf(size, numTopics, numTopSimilar, minScore,corpus,goldStandard,entropyBased)).append("\n");
-            summary.append("kmeans\t").append(evaluationOf(size, numTopics, numTopSimilar, minScore,corpus,goldStandard,kMeansBased)).append("\n");
+            Map<String, List<Similarity>> goldStandard = createGoldStandard(corpus, minScore);
+            summary.append("gradient\t").append(evaluationOf(size, numTopics,  minScore,corpus,goldStandard,gradientBased)).append("\n");
+            summary.append("entropy\t").append(evaluationOf(size, numTopics, minScore,corpus,goldStandard,entropyBased)).append("\n");
+            summary.append("kmeans\t").append(evaluationOf(size, numTopics, minScore,corpus,goldStandard,kMeansBased)).append("\n");
         }
         System.out.println(summary);
     }

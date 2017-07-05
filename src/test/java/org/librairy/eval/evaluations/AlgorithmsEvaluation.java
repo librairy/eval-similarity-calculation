@@ -9,13 +9,9 @@ package org.librairy.eval.evaluations;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import es.cbadenes.lab.test.IntegrationTest;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.librairy.eval.algorithms.Algorithm;
-import org.librairy.eval.algorithms.EntropyAlgorithm;
-import org.librairy.eval.algorithms.GradientAlgorithm;
-import org.librairy.eval.algorithms.KMeansAlgorithm;
+import org.librairy.eval.algorithms.*;
 import org.librairy.eval.model.Corpora;
 import org.librairy.eval.model.DirichletDistribution;
 import org.librairy.eval.model.Result;
@@ -37,9 +33,9 @@ import java.util.stream.Collectors;
  * @author Badenes Olmedo, Carlos <cbadenes@fi.upm.es>
  */
 @Category(IntegrationTest.class)
-public class AllAlgorithmsEvaluation extends AbstractEvaluation {
+public class AlgorithmsEvaluation extends AbstractEvaluation {
 
-    private static final Logger LOG = LoggerFactory.getLogger(AllAlgorithmsEvaluation.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AlgorithmsEvaluation.class);
 
     @Test
     public void evaluate() throws IOException {
@@ -50,23 +46,23 @@ public class AllAlgorithmsEvaluation extends AbstractEvaluation {
         algorithms.put("entropy2",  new EntropyAlgorithm(2));
         algorithms.put("entropy3",  new EntropyAlgorithm(3));
         algorithms.put("kmeans",    new KMeansAlgorithm());
+        algorithms.put("hentropy",    new HierarchicalEntropyAlgorithm(100));
 
         Map<String,DataReport> reports = new HashMap<>();
         reports.put("general",          result -> result.toString()+"\n");
         reports.put("time",             result -> result.getTime() + "\t");
         reports.put("efficiency",       result -> result.getEfficiency() + "\t");
         reports.put("fMeasure",         result -> result.getFMeasure() + "\t");
-        reports.put("similarities",     result -> result.getCalculatedSimilarities() + "\t");
+        reports.put("pairs",     result -> result.getCalculatedSimilarities() + "\t");
         reports.put("clusters",         result -> result.getClusters() + "\t");
         reports.put("effectiveness",    result -> result.getEffectiveness() + "\t");
 
-        Integer topSimilar          = 5;
-        Double minScore             = 0.75;
-        List<Integer> sizes = Arrays.asList(new Integer[]{
-                200,300,400,500,600,700,800,900,1000
-        });
+//        Integer topSimilar          = 5;
+        Double minScore             = 0.95;
+        List<Integer> sizes = Arrays.asList(new Integer[]{200,300,400,500,600,700,800,900,1000});
+//        List<Integer> sizes = Arrays.asList(new Integer[]{500});
 
-        String fileName = new StringBuilder().append("res-top").append(topSimilar).append("-min").append(StringUtils.replace(String.valueOf(minScore),".","_")).toString();
+        String fileName = new StringBuilder().append("out/res-top").append("-min").append(StringUtils.replace(String.valueOf(minScore),".","_")).toString();
 
 
         Map<String,FileWriter> writers = new HashMap<>();
@@ -83,10 +79,10 @@ public class AllAlgorithmsEvaluation extends AbstractEvaluation {
             List<DirichletDistribution> corpus = retrieveCorpus(size);
             Integer numTopics = corpus.get(0).getVector().size();
 
-            Map<String, List<Similarity>> goldStandard = createGoldStandard(corpus, minScore, topSimilar);
+            Map<String, List<Similarity>> goldStandard = createGoldStandard(corpus, minScore);
 
             for(Map.Entry<String,Algorithm> algorithm : algorithms.entrySet()){
-                Result result = evaluationOf(size, numTopics, topSimilar, minScore,corpus,goldStandard,algorithm.getValue());
+                Result result = evaluationOf(size, numTopics, minScore,corpus,goldStandard,algorithm.getValue());
                 result.setAlgorithm(algorithm.getKey());
 
                 writers.entrySet().forEach(writer -> {try {writer.getValue().write(reports.get(writer.getKey()).get(result));} catch (IOException e) {e.printStackTrace();}});

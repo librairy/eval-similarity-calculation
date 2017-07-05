@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
  */
 public abstract class AbstractEvaluation {
 
-    protected Map<String,List<Similarity>> createGoldStandard(List<DirichletDistribution> vectors, Double threshold, Integer numTopSimilar){
+    protected Map<String,List<Similarity>> createGoldStandard(List<DirichletDistribution> vectors, Double threshold){
         Map<String,List<Similarity>> goldStandard = new HashMap<>();
         for(DirichletDistribution dd : vectors){
             List<Similarity> topSimilar = vectors.stream()
@@ -42,14 +42,14 @@ public abstract class AbstractEvaluation {
                     })
                     .sorted((v1, v2) -> -v1.getScore().compareTo(v2.getScore()))
                     .filter(s -> s.getScore() > threshold)
-                    .limit(numTopSimilar)
+//                    .limit(numTopSimilar)
                     .collect(Collectors.toList());
             goldStandard.put(dd.getId(), topSimilar);
         }
         return goldStandard;
     }
 
-    public Result evaluationOf(Integer numVectors, Integer numTopics, Integer numTopSimilar, Double threshold, List<DirichletDistribution> vectors, Map<String,List<Similarity>> goldStandard, Algorithm algorithm){
+    public Result evaluationOf(Integer numVectors, Integer numTopics, Double threshold, List<DirichletDistribution> vectors, Map<String,List<Similarity>> goldStandard, Algorithm algorithm){
 
         // Recommendations based on algorithm
         Instant start   = Instant.now();
@@ -80,7 +80,7 @@ public abstract class AbstractEvaluation {
                     similarities.add(sim);
                 }
             }
-            List<Similarity> topSimilarities = similarities.stream().sorted((a, b) -> -a.getScore().compareTo(b.getScore())).limit(numTopSimilar).collect(Collectors.toList());
+            List<Similarity> topSimilarities = similarities.stream().sorted((a, b) -> -a.getScore().compareTo(b.getScore())).collect(Collectors.toList());
             recommendations.put(gd.getDirichletDistribution().getId(), topSimilarities);
         }
 
@@ -112,7 +112,6 @@ public abstract class AbstractEvaluation {
         System.out.println("Algorithm: " + algorithm);
         System.out.println("Num Vectors: " + numVectors);
         System.out.println("Num Topics: " + numTopics);
-        System.out.println("Top Similar: " + numTopSimilar);
         System.out.println("Min Score: " + threshold);
 
 
@@ -124,9 +123,12 @@ public abstract class AbstractEvaluation {
 
         Double precision    = (Double.valueOf(tp) + Double.valueOf(fp)) == 0.0? 0.0 : Double.valueOf(tp) / (Double.valueOf(tp) + Double.valueOf(fp));
         Double recall       = (Double.valueOf(tp) + Double.valueOf(fn)) == 0.0? 0.0 : Double.valueOf(tp) / (Double.valueOf(tp) + Double.valueOf(fn));
+        Double fMeasure     = 2* (precision*recall)/(precision+recall);
 
-        System.out.println("Precision@"+numTopSimilar+"=" + precision);
-        System.out.println("Recall@"+numTopSimilar+"=" + recall);
+
+        System.out.println("Precision@"+threshold+"=" + precision);
+        System.out.println("Recall@"+threshold+"=" + recall);
+        System.out.println("F-Measure@"+threshold+"=" + fMeasure);
 
         Integer clusters =  Long.valueOf(shapes.stream().map(s -> s.getExpression()).distinct().count()).intValue();
         System.out.println("Num Groups: " + clusters);
@@ -135,13 +137,15 @@ public abstract class AbstractEvaluation {
         Integer calculatedSimilarities = Long.valueOf(vectorsByExpression.entrySet().stream().map(e -> e.getValue().size()*e.getValue().size()).reduce((a,b) -> a+b).get()).intValue();
         System.out.println("Calculated Similarities: " + calculatedSimilarities);
         Double saving = 100.0 - calculatedSimilarities*100.0/totalSimilarities;
-        System.out.println("Efficiency: " + saving + "%");
+        Integer minimumSimilarities = Long.valueOf(goldStandard.entrySet().parallelStream().flatMap(entry -> entry.getValue().stream()).count()).intValue();
+        System.out.println("Minimum Similarities: " + minimumSimilarities);
+        System.out.println("Saving: " + saving + "%");
 
         Result result = new Result();
 
+        result.setMinimumSimilarities(minimumSimilarities);
         result.setSize(numVectors);
         result.setTopics(numTopics);
-        result.setTop(numTopSimilar);
         result.setMinScore(threshold);
         result.setTp(tp);
         result.setTn(tn);

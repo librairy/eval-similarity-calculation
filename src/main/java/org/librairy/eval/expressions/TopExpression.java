@@ -27,7 +27,7 @@ public class TopExpression extends DistributionExpression {
                 .sorted( (a,b) -> -a._2.compareTo(b._2))
                 .map( t -> String.valueOf(t._1))
                 .limit(n)
-                .collect(Collectors.joining("")), dirichletDistribution);
+                .collect(Collectors.joining("-")), dirichletDistribution);
     }
 
 }
