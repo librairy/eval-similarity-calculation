@@ -1,4 +1,4 @@
-package org.librairy.eval.evaluations;
+package org.librairy.eval;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import es.cbadenes.lab.test.IntegrationTest;
@@ -35,7 +35,7 @@ public class CorpusManagement {
         corpora.setDocuments(shapeDao.get(domainUri));
 
         ObjectMapper jsonMapper = new ObjectMapper();
-        jsonMapper.writeValue(new File("corpora.json"), corpora);
+        jsonMapper.writeValue(new File("src/main/resources/corpora.json"), corpora);
 
         System.out.println(corpora.getDocuments().size());
 
@@ -45,7 +45,7 @@ public class CorpusManagement {
     public void load() throws IOException {
 
         ObjectMapper jsonMapper = new ObjectMapper();
-        Corpora corpora = jsonMapper.readValue(new File("corpora.json"), Corpora.class);
+        Corpora corpora = jsonMapper.readValue(new File("src/main/resources/corpora.json"), Corpora.class);
 
         System.out.println(corpora.getDocuments().size());
 

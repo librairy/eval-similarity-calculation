@@ -95,16 +95,21 @@ public abstract class AbstractEvaluation {
 
             List<Similarity> recommendation = recommendations.get(entry.getKey());
 
-            tp += Long.valueOf(entry.getValue().stream().filter(recommendation::contains).count()).intValue();
+            try{
+                tp += Long.valueOf(entry.getValue().stream().filter(recommendation::contains).count()).intValue();
 
-            fp += Long.valueOf(recommendation.stream().filter(r -> !entry.getValue().contains(r)).count()).intValue();
+                fp += Long.valueOf(recommendation.stream().filter(r -> !entry.getValue().contains(r)).count()).intValue();
 
-            fn += Long.valueOf(entry.getValue().stream().filter( e -> !recommendation.contains(e)).count()).intValue();
+                fn += Long.valueOf(entry.getValue().stream().filter( e -> !recommendation.contains(e)).count()).intValue();
 
-            tn += Long.valueOf(vectors.stream().filter( v ->
-                    (recommendation.stream().filter( r -> r.getId().equalsIgnoreCase(v.getId())).count() == 0) &&
-                            (entry.getValue().stream().filter( e -> e.getId().equalsIgnoreCase(v.getId())).count() == 0)
-            ).count()).intValue();
+                tn += Long.valueOf(vectors.stream().filter( v ->
+                        (recommendation.stream().filter( r -> r.getId().equalsIgnoreCase(v.getId())).count() == 0) &&
+                                (entry.getValue().stream().filter( e -> e.getId().equalsIgnoreCase(v.getId())).count() == 0)
+                ).count()).intValue();
+            }catch (Exception e){
+                e.printStackTrace();
+                System.out.println(recommendation);
+            }
 
         }
 
@@ -134,7 +139,7 @@ public abstract class AbstractEvaluation {
         System.out.println("Num Groups: " + clusters);
         Integer totalSimilarities = Long.valueOf(vectors.size()*vectors.size()).intValue();
         System.out.println("Total Similarities: " + totalSimilarities);
-        Integer calculatedSimilarities = Long.valueOf(vectorsByExpression.entrySet().stream().map(e -> e.getValue().size()*e.getValue().size()).reduce((a,b) -> a+b).get()).intValue();
+        Integer calculatedSimilarities = Long.valueOf(vectorsByExpression.entrySet().stream().map(e -> e.getValue().size()*e.getValue().size()).reduce((a,b) -> a+b).get()).intValue() + algorithm.getExtraPairs();
         System.out.println("Calculated Similarities: " + calculatedSimilarities);
         Double saving = 100.0 - calculatedSimilarities*100.0/totalSimilarities;
         Integer minimumSimilarities = Long.valueOf(goldStandard.entrySet().parallelStream().flatMap(entry -> entry.getValue().stream()).count()).intValue();

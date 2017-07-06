@@ -41,26 +41,35 @@ public class AlgorithmsEvaluation extends AbstractEvaluation {
     public void evaluate() throws IOException {
 
         Map<String,Algorithm> algorithms = new HashMap<>();
-        algorithms.put("gradient",  new GradientAlgorithm());
-        algorithms.put("entropy1",  new EntropyAlgorithm(1));
-        algorithms.put("entropy2",  new EntropyAlgorithm(2));
-        algorithms.put("entropy3",  new EntropyAlgorithm(3));
-        algorithms.put("kmeans",    new KMeansAlgorithm());
-        algorithms.put("hentropy",    new HierarchicalEntropyAlgorithm(100));
+        algorithms.put("gradient",      new GradientAlgorithm(0.99));
+        algorithms.put("entropy-1",      new EntropyAlgorithm(1));
+        algorithms.put("entropy-2",      new EntropyAlgorithm(2));
+        algorithms.put("entropy-3",      new EntropyAlgorithm(3));
+        algorithms.put("hentropy-100",   new HierarchicalEntropyAlgorithm(100));
+        algorithms.put("hentropy-200",   new HierarchicalEntropyAlgorithm(200));
+        algorithms.put("hentropy-300",   new HierarchicalEntropyAlgorithm(300));
+        algorithms.put("kmeans-20",      new KMeansAlgorithm(20));
+        algorithms.put("kmeans-50",      new KMeansAlgorithm(50));
+        algorithms.put("kmeans-100",     new KMeansAlgorithm(100));
+        algorithms.put("dbscan-10",     new DBSCANAlgorithm(10));
+        algorithms.put("dbscan-50",     new DBSCANAlgorithm(50));
+        algorithms.put("dbscan-100",     new DBSCANAlgorithm(100));
+        algorithms.put("dbscan-200",     new DBSCANAlgorithm(200));
+        algorithms.put("random",        new RandomizeSelectionAlgorithm(44)); // num topics
 
         Map<String,DataReport> reports = new HashMap<>();
         reports.put("general",          result -> result.toString()+"\n");
         reports.put("time",             result -> result.getTime() + "\t");
         reports.put("efficiency",       result -> result.getEfficiency() + "\t");
         reports.put("fMeasure",         result -> result.getFMeasure() + "\t");
+        reports.put("precision",         result -> result.getPrecision() + "\t");
+        reports.put("recall",         result -> result.getRecall() + "\t");
         reports.put("pairs",     result -> result.getCalculatedSimilarities() + "\t");
         reports.put("clusters",         result -> result.getClusters() + "\t");
         reports.put("effectiveness",    result -> result.getEffectiveness() + "\t");
 
-//        Integer topSimilar          = 5;
-        Double minScore             = 0.95;
+        Double minScore             = 0.83;
         List<Integer> sizes = Arrays.asList(new Integer[]{200,300,400,500,600,700,800,900,1000});
-//        List<Integer> sizes = Arrays.asList(new Integer[]{500});
 
         String fileName = new StringBuilder().append("out/res-top").append("-min").append(StringUtils.replace(String.valueOf(minScore),".","_")).toString();
 
@@ -70,7 +79,7 @@ public class AlgorithmsEvaluation extends AbstractEvaluation {
 
         // header
         writers.entrySet().forEach(entry -> {try {entry.getValue().write("Size\t");} catch (IOException e) {e.printStackTrace();}});
-        algorithms.entrySet().forEach( algorithm -> writers.entrySet().forEach(writer -> {try {writer.getValue().write(algorithm.getKey() + "\t");} catch (IOException e) {e.printStackTrace();}}));
+        algorithms.entrySet().stream().sorted((a,b) -> a.getKey().compareTo(b.getKey())).forEach( algorithm -> writers.entrySet().forEach(writer -> {try {writer.getValue().write(algorithm.getKey() + "\t");} catch (IOException e) {e.printStackTrace();}}));
 
 
         for(Integer size: sizes){
@@ -81,12 +90,12 @@ public class AlgorithmsEvaluation extends AbstractEvaluation {
 
             Map<String, List<Similarity>> goldStandard = createGoldStandard(corpus, minScore);
 
-            for(Map.Entry<String,Algorithm> algorithm : algorithms.entrySet()){
+            algorithms.entrySet().stream().sorted((a,b) -> a.getKey().compareTo(b.getKey())).forEach( algorithm -> {
                 Result result = evaluationOf(size, numTopics, minScore,corpus,goldStandard,algorithm.getValue());
                 result.setAlgorithm(algorithm.getKey());
 
                 writers.entrySet().forEach(writer -> {try {writer.getValue().write(reports.get(writer.getKey()).get(result));} catch (IOException e) {e.printStackTrace();}});
-            }
+            });
         }
 
         writers.entrySet().forEach(writer -> {try {writer.getValue().close();} catch (IOException e) {e.printStackTrace();}});
@@ -95,7 +104,7 @@ public class AlgorithmsEvaluation extends AbstractEvaluation {
 
     private List<DirichletDistribution> retrieveCorpus(Integer maxSize) throws IOException {
         ObjectMapper jsonMapper = new ObjectMapper();
-        Corpora corpora = jsonMapper.readValue(new File("corpora.json"), Corpora.class);
+        Corpora corpora = jsonMapper.readValue(new File("src/main/resources/corpora.json"), Corpora.class);
         return corpora.getDocuments().stream().limit(maxSize).collect(Collectors.toList());
 
     }

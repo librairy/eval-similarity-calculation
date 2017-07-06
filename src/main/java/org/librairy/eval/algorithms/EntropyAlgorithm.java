@@ -24,6 +24,11 @@ public class EntropyAlgorithm implements Algorithm {
     }
 
     @Override
+    public Integer getExtraPairs() {
+        return 0;
+    }
+
+    @Override
     public String toString() {
         return "Entropy-" + top + " Algorithm";
     }

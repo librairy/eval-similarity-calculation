@@ -4,7 +4,7 @@ import org.apache.commons.math3.ml.clustering.CentroidCluster;
 import org.apache.commons.math3.ml.clustering.KMeansPlusPlusClusterer;
 import org.librairy.eval.expressions.DistributionExpression;
 import org.librairy.eval.model.DirichletDistribution;
-import org.librairy.eval.model.KmeansPoint;
+import org.librairy.eval.model.DirichletPoint;
 import org.librairy.metrics.distance.JensenShannonDivergence;
 
 import java.util.List;
@@ -15,18 +15,34 @@ import java.util.stream.Collectors;
  */
 public class KMeansAlgorithm implements Algorithm {
 
+    private Integer iterations;
+    private int numCluster;
+    private int numPoints;
+
+
+    public KMeansAlgorithm(Integer iterations){
+        this.iterations = iterations;
+    }
+
     @Override
     public List<DistributionExpression> getShapesFrom(List<DirichletDistribution> distributions) {
-        KMeansPlusPlusClusterer<KmeansPoint> kmeans = new KMeansPlusPlusClusterer<KmeansPoint>(distributions.get(0).getVector().size(),100, (double[] a, double[] b) ->  JensenShannonDivergence.apply(a, b));
+        this.numCluster     = distributions.get(0).getVector().size();
+        this.numPoints      = distributions.size();
+        KMeansPlusPlusClusterer<DirichletPoint> kmeans = new KMeansPlusPlusClusterer<DirichletPoint>(numCluster,iterations, (double[] a, double[] b) ->  JensenShannonDivergence.apply(a, b));
 
-        List<KmeansPoint> points = distributions.stream().map(d -> new KmeansPoint(d)).collect(Collectors.toList());
-        List<CentroidCluster<KmeansPoint>> clusters = kmeans.cluster(points);
+        List<DirichletPoint> points = distributions.stream().map(d -> new DirichletPoint(d)).collect(Collectors.toList());
+        List<CentroidCluster<DirichletPoint>> clusters = kmeans.cluster(points);
 
         return clusters.stream().flatMap(cluster -> cluster.getPoints().stream().map(point -> new DistributionExpression(cluster.toString(), point.getDistribution()))).collect(Collectors.toList());
     }
 
     @Override
+    public Integer getExtraPairs() {
+        return iterations * (numPoints*numCluster);
+    }
+
+    @Override
     public String toString() {
-        return "KMeans Algorithm";
+        return "KMeans-"+ iterations + " Algorithm";
     }
 }

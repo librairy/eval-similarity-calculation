@@ -12,9 +12,20 @@ import java.util.stream.Collectors;
  */
 public class GradientAlgorithm implements Algorithm {
 
+    private final Double ratio;
+
+    public GradientAlgorithm(Double ratio){
+        this.ratio = ratio;
+    }
+
     @Override
     public List<DistributionExpression> getShapesFrom(List<DirichletDistribution> distributions) {
-        return distributions.stream().map(v -> new GradientExpression(0.99, v)).collect(Collectors.toList());
+        return distributions.stream().map(v -> new GradientExpression(ratio, v)).collect(Collectors.toList());
+    }
+
+    @Override
+    public Integer getExtraPairs() {
+        return 0;
     }
 
 

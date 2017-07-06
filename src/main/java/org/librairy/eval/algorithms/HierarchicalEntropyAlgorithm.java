@@ -4,6 +4,7 @@ import org.librairy.eval.expressions.DistributionExpression;
 import org.librairy.eval.expressions.TopExpression;
 import org.librairy.eval.model.DirichletDistribution;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -29,29 +30,53 @@ public class HierarchicalEntropyAlgorithm implements Algorithm {
 
         top.incrementAndGet();
 
+        List<String> alreadyVisited = new ArrayList<>();
+
         while(top.get() <= distributions.get(0).getVector().size()) {
 
-            List<Map.Entry<String, List<TopExpression>>> oversizeExpressions = expressions
+            List<Map.Entry<String, List<TopExpression>>> oversizedExpressions = expressions
                     .entrySet()
-                    .parallelStream()
+                    .stream()
+                    .filter(entry -> !alreadyVisited.contains(entry.getKey()))
                     .filter(entry -> entry.getValue().size() > maxSize)
                     .collect(Collectors.toList());
 
-            if (oversizeExpressions.isEmpty()) break;
+            if (oversizedExpressions.isEmpty()) break;
 
-            oversizeExpressions.forEach(entry -> {
+            oversizedExpressions.stream().forEach(entry -> {
                 expressions.remove(entry.getKey());
 
                 Map<String, List<TopExpression>> newExpressions = entry.getValue()
-                        .parallelStream()
+                        .stream()
                         .map(e -> new TopExpression(top.get(), e.getDirichletDistribution()))
                         .collect(Collectors.groupingBy(TopExpression::getExpression));
-                expressions.putAll(newExpressions);
+
+                // aggregate low-frequency distribution
+                Map<String, List<TopExpression>> lowFreqExpressions = newExpressions.entrySet().stream()
+                        .filter(e -> e.getValue().size() < (maxSize / 2))
+                        .flatMap(e -> e.getValue().stream())
+                        .map(e -> new TopExpression(top.get() - 1, e.getDirichletDistribution()))
+                        .collect(Collectors.groupingBy(TopExpression::getExpression));
+                expressions.putAll(lowFreqExpressions);
+                lowFreqExpressions.entrySet().stream().forEach(e -> alreadyVisited.add(e.getKey()));
+
+                // individual high-frequency distribution
+                Map<String, List<TopExpression>> highFreqExpression = newExpressions.entrySet().stream()
+                        .filter(e -> e.getValue().size() >= (maxSize / 2))
+                        .flatMap(e -> e.getValue().stream())
+                        .collect(Collectors.groupingBy(TopExpression::getExpression));
+                expressions.putAll(highFreqExpression);
             });
             top.incrementAndGet();
         }
 
-        return expressions.entrySet().parallelStream().flatMap(entry -> entry.getValue().stream()).collect(Collectors.toList());
+        return expressions.entrySet().stream().flatMap(entry -> entry.getValue().stream()).collect(Collectors.toList());
+
+    }
+
+    @Override
+    public Integer getExtraPairs() {
+        return 0;
     }
 
     @Override

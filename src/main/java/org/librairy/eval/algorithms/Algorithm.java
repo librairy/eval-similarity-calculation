@@ -8,7 +8,9 @@ import java.util.List;
 /**
  * @author Badenes Olmedo, Carlos <cbadenes@fi.upm.es>
  */
-public interface Algorithm {
+public interface Algorithm  {
 
     List<DistributionExpression> getShapesFrom(List<DirichletDistribution> distributions);
+
+    Integer getExtraPairs();
 }

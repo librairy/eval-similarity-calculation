@@ -7,12 +7,15 @@
 
 package org.librairy.eval.experiments;
 
+import org.librairy.eval.algorithms.Algorithm;
 import org.librairy.eval.evaluations.AbstractEvaluation;
 import org.librairy.eval.expressions.DistributionExpression;
 import org.librairy.eval.model.DirichletDistribution;
 import org.librairy.eval.model.Result;
+import org.librairy.eval.model.Similarity;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -31,12 +34,10 @@ public abstract class AbstractExperiment extends AbstractEvaluation{
     }
 
 
-    public Result evaluationOf(Integer numVectors, Integer numTopics, Integer numTopSimilar, Double threshold) {
-        return evaluationOf(numVectors, numTopics, numTopSimilar, threshold, createSampling(numVectors, numTopics));
-    }
-
-    public Result evaluationOf(Integer numVectors, Integer numTopics, Integer numTopSimilar, Double threshold, List<DirichletDistribution> vectors){
-        return evaluationOf(numVectors, numTopics, threshold, vectors, createGoldStandard(vectors, threshold), (a) -> getShapesFrom(a));
+    public Result evaluationOf(Integer numVectors, Integer numTopics, Double threshold, Algorithm algorithm) {
+        List<DirichletDistribution> sample = createSampling(numVectors, numTopics);
+        Map<String, List<Similarity>> goldStandard = createGoldStandard(sample, threshold);
+        return evaluationOf(numVectors, numTopics, threshold, sample, goldStandard, algorithm);
     }
 
 }

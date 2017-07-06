@@ -8,6 +8,7 @@
 package org.librairy.eval.experiments;
 
 import org.junit.Test;
+import org.librairy.eval.algorithms.GradientAlgorithm;
 import org.librairy.eval.expressions.GradientExpression;
 import org.librairy.eval.model.DirichletDistribution;
 import org.librairy.eval.expressions.DistributionExpression;
@@ -34,7 +35,7 @@ public class SyntheticGradientBasedExperiment extends AbstractExperiment {
         StringBuilder summary = new StringBuilder();
 
         summary.append(IntStream.range(0, 1)
-                .mapToObj(i -> evaluationOf(numVectors, numTopics, numTopSimilar, threshold))
+                .mapToObj(i -> evaluationOf(numVectors, numTopics, threshold, new GradientAlgorithm(ratio)))
                 .map(r -> r.toString())
                 .collect(Collectors.joining("\n"))).append("\n");
 
@@ -48,52 +49,52 @@ public class SyntheticGradientBasedExperiment extends AbstractExperiment {
 
         ratio = 0.99;
         summary.append(IntStream.range(0, 3)
-                .mapToObj(i -> evaluationOf(1000, 5, 5, 0.75))
+                .mapToObj(i -> evaluationOf(1000, 5, 0.75, new GradientAlgorithm(ratio)))
                 .map(r -> r.toString())
                 .collect(Collectors.joining("\n"))).append("\n");
         ratio = 0.99;
         summary.append(IntStream.range(0, 3)
-                .mapToObj(i -> evaluationOf(1000, 10, 5, 0.75))
+                .mapToObj(i -> evaluationOf(1000, 10, 0.75, new GradientAlgorithm(ratio)))
                 .map(r -> r.toString())
                 .collect(Collectors.joining("\n"))).append("\n");
         ratio = 0.99;
         summary.append(IntStream.range(0, 3)
-                .mapToObj(i -> evaluationOf(1000, 20, 5, 0.75))
+                .mapToObj(i -> evaluationOf(1000, 20, 0.75, new GradientAlgorithm(ratio)))
                 .map(r -> r.toString())
                 .collect(Collectors.joining("\n"))).append("\n");
         ratio = 0.99;
         summary.append(IntStream.range(0, 3)
-                .mapToObj(i -> evaluationOf(1000, 40, 5, 0.75))
+                .mapToObj(i -> evaluationOf(1000, 40, 0.75, new GradientAlgorithm(ratio)))
                 .map(r -> r.toString())
                 .collect(Collectors.joining("\n"))).append("\n");
         ratio = 0.90;
         summary.append(IntStream.range(0, 3)
-                .mapToObj(i -> evaluationOf(1000, 20, 5, 0.75))
+                .mapToObj(i -> evaluationOf(1000, 20, 0.75, new GradientAlgorithm(ratio)))
                 .map(r -> r.toString())
                 .collect(Collectors.joining("\n"))).append("\n");
         ratio = 0.85;
         summary.append(IntStream.range(0, 3)
-                .mapToObj(i -> evaluationOf(1000, 20, 5, 0.75))
+                .mapToObj(i -> evaluationOf(1000, 20, 0.75, new GradientAlgorithm(ratio)))
                 .map(r -> r.toString())
                 .collect(Collectors.joining("\n"))).append("\n");
         ratio = 0.90;
         summary.append(IntStream.range(0, 3)
-                .mapToObj(i -> evaluationOf(1000, 40, 5, 0.75))
+                .mapToObj(i -> evaluationOf(1000, 40, 0.75, new GradientAlgorithm(ratio)))
                 .map(r -> r.toString())
                 .collect(Collectors.joining("\n"))).append("\n");
         ratio = 0.85;
         summary.append(IntStream.range(0, 3)
-                .mapToObj(i -> evaluationOf(1000, 40, 5, 0.75))
+                .mapToObj(i -> evaluationOf(1000, 40, 0.75, new GradientAlgorithm(ratio)))
                 .map(r -> r.toString())
                 .collect(Collectors.joining("\n"))).append("\n");
         ratio = 0.99;
         summary.append(IntStream.range(0, 3)
-                .mapToObj(i -> evaluationOf(1000, 40, 5, 0.6))
+                .mapToObj(i -> evaluationOf(1000, 40, 0.6, new GradientAlgorithm(ratio)))
                 .map(r -> r.toString())
                 .collect(Collectors.joining("\n"))).append("\n");
         ratio = 0.99;
         summary.append(IntStream.range(0, 3)
-                .mapToObj(i -> evaluationOf(1000, 40, 5, 0.5))
+                .mapToObj(i -> evaluationOf(1000, 40, 0.5, new GradientAlgorithm(ratio)))
                 .map(r -> r.toString())
                 .collect(Collectors.joining("\n"))).append("\n");
         System.out.println(summary);
