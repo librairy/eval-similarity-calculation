@@ -13,6 +13,7 @@ import org.librairy.eval.expressions.DistributionExpression;
 import org.librairy.eval.model.DirichletDistribution;
 import org.librairy.eval.model.Result;
 import org.librairy.eval.model.Similarity;
+import org.librairy.metrics.similarity.JensenShannonSimilarity;
 
 import java.util.List;
 import java.util.Map;
@@ -36,8 +37,8 @@ public abstract class AbstractExperiment extends AbstractEvaluation{
 
     public Result evaluationOf(Integer numVectors, Integer numTopics, Double threshold, Algorithm algorithm) {
         List<DirichletDistribution> sample = createSampling(numVectors, numTopics);
-        Map<String, List<Similarity>> goldStandard = createGoldStandard(sample, threshold);
-        return evaluationOf(numVectors, numTopics, threshold, sample, goldStandard, algorithm);
+        Map<String, List<Similarity>> goldStandard = createGoldStandard(sample, threshold, (p,q) -> JensenShannonSimilarity.apply(p,q));
+        return evaluationOf(numVectors, numTopics, threshold, sample, goldStandard, algorithm, (p,q) -> JensenShannonSimilarity.apply(p,q));
     }
 
 }

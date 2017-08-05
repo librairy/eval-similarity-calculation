@@ -15,7 +15,7 @@ import org.librairy.boot.model.domain.resources.Item;
 import org.librairy.boot.storage.dao.DomainsDao;
 import org.librairy.boot.storage.generator.URIGenerator;
 import org.librairy.eval.Config;
-import org.librairy.eval.algorithms.EntropyAlgorithm;
+import org.librairy.eval.algorithms.RDCAlgorithm;
 import org.librairy.eval.dao.ShapeDao;
 import org.librairy.eval.expressions.TopExpression;
 import org.librairy.eval.model.DirichletDistribution;
@@ -64,32 +64,32 @@ public class RealEntropyBasedExperiment extends AbstractExperiment {
         // threshold = 0.75
         StringBuilder summary = new StringBuilder();
         summary.append(IntStream.range(0, 1)
-                .mapToObj(i -> evaluationOf(maxSize, numTopics, threshold, new EntropyAlgorithm(top)))
+                .mapToObj(i -> evaluationOf(maxSize, numTopics, threshold, new RDCAlgorithm(top)))
                 .map(r -> r.toString())
                 .collect(Collectors.joining("\n"))).append("\n");
 
         top = 2;
         summary.append(IntStream.range(0, 1)
-                .mapToObj(i -> evaluationOf(maxSize, numTopics, threshold, new EntropyAlgorithm(top)))
+                .mapToObj(i -> evaluationOf(maxSize, numTopics, threshold, new RDCAlgorithm(top)))
                 .map(r -> r.toString())
                 .collect(Collectors.joining("\n"))).append("\n");
 
         top = 3;
         summary.append(IntStream.range(0, 1)
-                .mapToObj(i -> evaluationOf(maxSize, numTopics, threshold, new EntropyAlgorithm(top)))
+                .mapToObj(i -> evaluationOf(maxSize, numTopics, threshold, new RDCAlgorithm(top)))
                 .map(r -> r.toString())
                 .collect(Collectors.joining("\n"))).append("\n");
 
         top = 1;
         threshold = 0.6;
         summary.append(IntStream.range(0, 1)
-                .mapToObj(i -> evaluationOf(maxSize, numTopics, threshold, new EntropyAlgorithm(top)))
+                .mapToObj(i -> evaluationOf(maxSize, numTopics, threshold, new RDCAlgorithm(top)))
                 .map(r -> r.toString())
                 .collect(Collectors.joining("\n"))).append("\n");
 
         threshold = 0.5;
         summary.append(IntStream.range(0, 1)
-                .mapToObj(i -> evaluationOf(maxSize, numTopics, threshold, new EntropyAlgorithm(top)))
+                .mapToObj(i -> evaluationOf(maxSize, numTopics, threshold, new RDCAlgorithm(top)))
                 .map(r -> r.toString())
                 .collect(Collectors.joining("\n"))).append("\n");
 

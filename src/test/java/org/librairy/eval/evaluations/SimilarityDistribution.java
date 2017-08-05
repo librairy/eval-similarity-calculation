@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.util.DoubleSummaryStatistics;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -35,7 +36,7 @@ public class SimilarityDistribution {
     public void individual() throws IOException {
 
         ObjectMapper jsonMapper = new ObjectMapper();
-        Corpora corpora = jsonMapper.readValue(new File("corpora.json"), Corpora.class);
+        Corpora corpora = jsonMapper.readValue(new File("src/main/resources/real-corpora.json"), Corpora.class);
 
 
         // Getting distribution of similarities
@@ -65,7 +66,7 @@ public class SimilarityDistribution {
 
 //        System.out.println(out.toString());
 
-        FileWriter writer = new FileWriter("res-individual-similarities.txt");
+        FileWriter writer = new FileWriter("results/real/individual-similarities.csv");
         writer.write(out.toString());
         writer.close();
 
@@ -75,7 +76,7 @@ public class SimilarityDistribution {
     public void aggregated() throws IOException {
 
         ObjectMapper jsonMapper = new ObjectMapper();
-        Corpora corpora = jsonMapper.readValue(new File("corpora.json"), Corpora.class);
+        Corpora corpora = jsonMapper.readValue(new File("src/main/resources/synthetic-corpora.json"), Corpora.class);
 
 
         // Getting distribution of similarities
@@ -94,8 +95,27 @@ public class SimilarityDistribution {
 
         System.out.println(out.toString());
 
-        FileWriter writer = new FileWriter("res-aggregated-similarities.txt");
+        FileWriter writer = new FileWriter("results/synthetic/aggregated-similarities.csv");
         writer.write(out.toString());
         writer.close();
+    }
+
+    @Test
+    public void stats() throws IOException {
+
+        ObjectMapper jsonMapper = new ObjectMapper();
+        Corpora corpora = jsonMapper.readValue(new File("src/main/resources/synthetic-corpora.json"), Corpora.class);
+
+
+        // Getting distribution of similarities
+
+        List<DirichletDistribution> sample = corpora.getDocuments().stream().limit(1000).collect(Collectors.toList());
+
+
+        DoubleSummaryStatistics stats = sample.parallelStream().flatMap(d1 -> sample.stream().filter(e -> !e.getId().equals(d1.getId())).map(d2 -> JensenShannonSimilarity.apply(Doubles.toArray(d1.getVector()), Doubles.toArray(d2.getVector())))).collect(DoubleSummaryStatistics::new, DoubleSummaryStatistics::accept, DoubleSummaryStatistics::combine);
+
+        System.out.println(stats);
+
+
     }
 }

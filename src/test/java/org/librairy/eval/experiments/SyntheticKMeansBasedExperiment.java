@@ -12,7 +12,7 @@ import org.apache.commons.math3.ml.clustering.CentroidCluster;
 import org.apache.commons.math3.ml.clustering.KMeansPlusPlusClusterer;
 import org.apache.commons.math3.ml.distance.DistanceMeasure;
 import org.junit.Test;
-import org.librairy.eval.algorithms.KMeansAlgorithm;
+import org.librairy.eval.algorithms.KMeansJSAlgorithm;
 import org.librairy.eval.model.DirichletDistribution;
 import org.librairy.eval.expressions.DistributionExpression;
 import org.librairy.eval.model.DirichletPoint;
@@ -40,7 +40,7 @@ public class SyntheticKMeansBasedExperiment extends AbstractExperiment {
         StringBuilder summary = new StringBuilder();
 
         summary.append(IntStream.range(0, 1)
-                .mapToObj(i -> evaluationOf(numVectors, numTopics, threshold, new KMeansAlgorithm(100)))
+                .mapToObj(i -> evaluationOf(numVectors, numTopics, threshold, new KMeansJSAlgorithm(100)))
                 .map(r -> r.toString())
                 .collect(Collectors.joining("\n"))).append("\n");
 
@@ -54,52 +54,52 @@ public class SyntheticKMeansBasedExperiment extends AbstractExperiment {
 
         iterations = 100;
         summary.append(IntStream.range(0, 3)
-                .mapToObj(i -> evaluationOf(1000, 5, 0.75, new KMeansAlgorithm(iterations)))
+                .mapToObj(i -> evaluationOf(1000, 5, 0.75, new KMeansJSAlgorithm(iterations)))
                 .map(r -> r.toString())
                 .collect(Collectors.joining("\n"))).append("\n");
         iterations = 100;
         summary.append(IntStream.range(0, 3)
-                .mapToObj(i -> evaluationOf(1000, 10, 0.75, new KMeansAlgorithm(iterations)))
+                .mapToObj(i -> evaluationOf(1000, 10, 0.75, new KMeansJSAlgorithm(iterations)))
                 .map(r -> r.toString())
                 .collect(Collectors.joining("\n"))).append("\n");
         iterations = 100;
         summary.append(IntStream.range(0, 3)
-                .mapToObj(i -> evaluationOf(1000, 20, 0.75, new KMeansAlgorithm(iterations)))
+                .mapToObj(i -> evaluationOf(1000, 20, 0.75, new KMeansJSAlgorithm(iterations)))
                 .map(r -> r.toString())
                 .collect(Collectors.joining("\n"))).append("\n");
         iterations = 100;
         summary.append(IntStream.range(0, 3)
-                .mapToObj(i -> evaluationOf(1000, 40, 0.75, new KMeansAlgorithm(iterations)))
+                .mapToObj(i -> evaluationOf(1000, 40, 0.75, new KMeansJSAlgorithm(iterations)))
                 .map(r -> r.toString())
                 .collect(Collectors.joining("\n"))).append("\n");
         iterations = 200;
         summary.append(IntStream.range(0, 3)
-                .mapToObj(i -> evaluationOf(1000, 20, 0.75, new KMeansAlgorithm(iterations)))
+                .mapToObj(i -> evaluationOf(1000, 20, 0.75, new KMeansJSAlgorithm(iterations)))
                 .map(r -> r.toString())
                 .collect(Collectors.joining("\n"))).append("\n");
         iterations = 300;
         summary.append(IntStream.range(0, 3)
-                .mapToObj(i -> evaluationOf(1000, 20, 0.75, new KMeansAlgorithm(iterations)))
+                .mapToObj(i -> evaluationOf(1000, 20, 0.75, new KMeansJSAlgorithm(iterations)))
                 .map(r -> r.toString())
                 .collect(Collectors.joining("\n"))).append("\n");
         iterations = 200;
         summary.append(IntStream.range(0, 3)
-                .mapToObj(i -> evaluationOf(1000, 40, 0.75, new KMeansAlgorithm(iterations)))
+                .mapToObj(i -> evaluationOf(1000, 40, 0.75, new KMeansJSAlgorithm(iterations)))
                 .map(r -> r.toString())
                 .collect(Collectors.joining("\n"))).append("\n");
         iterations = 300;
         summary.append(IntStream.range(0, 3)
-                .mapToObj(i ->evaluationOf(1000, 40, 0.75, new KMeansAlgorithm(iterations)))
+                .mapToObj(i ->evaluationOf(1000, 40, 0.75, new KMeansJSAlgorithm(iterations)))
                 .map(r -> r.toString())
                 .collect(Collectors.joining("\n"))).append("\n");
         iterations = 100;
         summary.append(IntStream.range(0, 3)
-                .mapToObj(i -> evaluationOf(1000, 40, 0.6, new KMeansAlgorithm(iterations)))
+                .mapToObj(i -> evaluationOf(1000, 40, 0.6, new KMeansJSAlgorithm(iterations)))
                 .map(r -> r.toString())
                 .collect(Collectors.joining("\n"))).append("\n");
         iterations = 100;
         summary.append(IntStream.range(0, 3)
-                .mapToObj(i -> evaluationOf(1000, 40, 0.5, new KMeansAlgorithm(iterations)))
+                .mapToObj(i -> evaluationOf(1000, 40, 0.5, new KMeansJSAlgorithm(iterations)))
                 .map(r -> r.toString())
                 .collect(Collectors.joining("\n"))).append("\n");
         System.out.println(summary);
@@ -111,19 +111,19 @@ public class SyntheticKMeansBasedExperiment extends AbstractExperiment {
         StringBuilder summary = new StringBuilder();
 
         iterations = 100;
-        summary.append(evaluationOf(100, 40, 0.75, new KMeansAlgorithm(iterations))).append("\n");
-        summary.append(evaluationOf(500, 40, 0.75, new KMeansAlgorithm(iterations))).append("\n");
-        summary.append(evaluationOf(1000, 40, 0.75, new KMeansAlgorithm(iterations))).append("\n");
-        summary.append(evaluationOf(2000, 40, 0.75, new KMeansAlgorithm(iterations))).append("\n");
-        summary.append(evaluationOf(3000, 40, 0.75, new KMeansAlgorithm(iterations))).append("\n");
-        summary.append(evaluationOf(4000, 40, 0.75, new KMeansAlgorithm(iterations))).append("\n");
-        summary.append(evaluationOf(5000, 40, 0.75, new KMeansAlgorithm(iterations))).append("\n");
-        summary.append(evaluationOf(10000, 40, 0.75, new KMeansAlgorithm(iterations))).append("\n");
-        summary.append(evaluationOf(20000, 40, 0.75, new KMeansAlgorithm(iterations))).append("\n");
-        summary.append(evaluationOf(30000, 40, 0.75, new KMeansAlgorithm(iterations))).append("\n");
-        summary.append(evaluationOf(40000, 40, 0.75, new KMeansAlgorithm(iterations))).append("\n");
-        summary.append(evaluationOf(50000, 40, 0.75, new KMeansAlgorithm(iterations))).append("\n");
-        summary.append(evaluationOf(100000, 40, 0.75, new KMeansAlgorithm(iterations))).append("\n");
+        summary.append(evaluationOf(100, 40, 0.75, new KMeansJSAlgorithm(iterations))).append("\n");
+        summary.append(evaluationOf(500, 40, 0.75, new KMeansJSAlgorithm(iterations))).append("\n");
+        summary.append(evaluationOf(1000, 40, 0.75, new KMeansJSAlgorithm(iterations))).append("\n");
+        summary.append(evaluationOf(2000, 40, 0.75, new KMeansJSAlgorithm(iterations))).append("\n");
+        summary.append(evaluationOf(3000, 40, 0.75, new KMeansJSAlgorithm(iterations))).append("\n");
+        summary.append(evaluationOf(4000, 40, 0.75, new KMeansJSAlgorithm(iterations))).append("\n");
+        summary.append(evaluationOf(5000, 40, 0.75, new KMeansJSAlgorithm(iterations))).append("\n");
+        summary.append(evaluationOf(10000, 40, 0.75, new KMeansJSAlgorithm(iterations))).append("\n");
+        summary.append(evaluationOf(20000, 40, 0.75, new KMeansJSAlgorithm(iterations))).append("\n");
+        summary.append(evaluationOf(30000, 40, 0.75, new KMeansJSAlgorithm(iterations))).append("\n");
+        summary.append(evaluationOf(40000, 40, 0.75, new KMeansJSAlgorithm(iterations))).append("\n");
+        summary.append(evaluationOf(50000, 40, 0.75, new KMeansJSAlgorithm(iterations))).append("\n");
+        summary.append(evaluationOf(100000, 40, 0.75, new KMeansJSAlgorithm(iterations))).append("\n");
         System.out.println(summary);
     }
 

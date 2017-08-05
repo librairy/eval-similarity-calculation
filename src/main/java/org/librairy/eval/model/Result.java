@@ -44,11 +44,11 @@ public class Result {
     }
 
     public Double getCost(){
-        return (Double.valueOf(calculatedSimilarities) - (Double.valueOf(minimumSimilarities))) / (Double.valueOf(totalSimilarities) - (Double.valueOf(minimumSimilarities)));
+        return (Math.min(Math.max(Double.valueOf(calculatedSimilarities),Double.valueOf(minimumSimilarities)),Double.valueOf(totalSimilarities)) - (Double.valueOf(minimumSimilarities))) / (Double.valueOf(totalSimilarities) - (Double.valueOf(minimumSimilarities)));
     }
 
     public Double getEfficiency(){
-        return getEffectiveness() - getCost();
+        return Math.max(getEffectiveness() - getCost(),0.0);
     }
 
     public Double getSavingSimilarities(){

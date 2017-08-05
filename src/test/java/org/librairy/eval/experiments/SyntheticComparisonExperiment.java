@@ -8,12 +8,13 @@
 package org.librairy.eval.experiments;
 
 import org.junit.Test;
-import org.librairy.eval.algorithms.EntropyAlgorithm;
-import org.librairy.eval.algorithms.GradientAlgorithm;
-import org.librairy.eval.algorithms.KMeansAlgorithm;
+import org.librairy.eval.algorithms.RDCAlgorithm;
+import org.librairy.eval.algorithms.TDCAlgorithm;
+import org.librairy.eval.algorithms.KMeansJSAlgorithm;
 import org.librairy.eval.expressions.DistributionExpression;
 import org.librairy.eval.model.DirichletDistribution;
 import org.librairy.eval.model.Similarity;
+import org.librairy.metrics.similarity.JensenShannonSimilarity;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -42,10 +43,10 @@ public class SyntheticComparisonExperiment extends AbstractExperiment {
             Integer recommendedTopics   = Double.valueOf(2*Math.sqrt(size/2)).intValue();
             Integer numTopics           = recommendedTopics != 0? recommendedTopics : 2;
             List<DirichletDistribution> corpus = createSampling(size, numTopics);
-            Map<String, List<Similarity>> goldStandard = createGoldStandard(corpus, minScore);
-            summary.append("gradient\t").append(evaluationOf(size, numTopics,  minScore,corpus,goldStandard,new GradientAlgorithm(0.99))).append("\n");
-            summary.append("entropy\t").append(evaluationOf(size, numTopics, minScore,corpus,goldStandard,new EntropyAlgorithm(1))).append("\n");
-            summary.append("kmeans\t").append(evaluationOf(size, numTopics, minScore,corpus,goldStandard,new KMeansAlgorithm(100))).append("\n");
+            Map<String, List<Similarity>> goldStandard = createGoldStandard(corpus, minScore,(p,q) -> JensenShannonSimilarity.apply(p,q));
+            summary.append("gradient\t").append(evaluationOf(size, numTopics,  minScore,corpus,goldStandard,new TDCAlgorithm(0.99),(p,q) -> JensenShannonSimilarity.apply(p,q))).append("\n");
+            summary.append("entropy\t").append(evaluationOf(size, numTopics, minScore,corpus,goldStandard,new RDCAlgorithm(1),(p,q) -> JensenShannonSimilarity.apply(p,q))).append("\n");
+            summary.append("kmeans\t").append(evaluationOf(size, numTopics, minScore,corpus,goldStandard,new KMeansJSAlgorithm(100),(p,q) -> JensenShannonSimilarity.apply(p,q))).append("\n");
         }
         System.out.println(summary);
     }

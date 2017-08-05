@@ -61,7 +61,7 @@
         <surefire.junit.version>2.12</surefire.junit.version>
 
         <librairy.boot.version>1.8.0</librairy.boot.version><!-- 1.6.1 -->
-        <librairy.metrics.version>1.19</librairy.metrics.version><!-- 1.18 -->
+        <librairy.metrics.version>1.20</librairy.metrics.version><!-- 1.18 -->
         <jackson.core.version>2.7.1</jackson.core.version>
         <jackson.codehaus.version>1.9.11</jackson.codehaus.version>
         <jsonpath.version>2.1.0</jsonpath.version>

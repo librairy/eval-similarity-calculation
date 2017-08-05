@@ -7,12 +7,13 @@
 
 package org.librairy.eval.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
+import scala.Tuple2;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * @author Badenes Olmedo, Carlos <cbadenes@fi.upm.es>
@@ -28,39 +29,83 @@ public class DirichletDistribution {
 
     public DirichletDistribution(String id, Integer dimension){
         this.id = id;
-        Double[] vector = new Double[dimension];
 
+        Random random = new Random();
 
-        List<Integer> indexes = new ArrayList<>();
-        for (int i=0;i<dimension;i++){
-            indexes.add(i);
-        }
+        List<Integer> probabilities = IntStream.range(0, dimension).mapToObj(i -> random.nextInt(Double.valueOf(Math.pow(10,random.nextInt(3)+1)).intValue())+1).collect(Collectors.toList());
 
-        Double acc = new Double(0.0);
-        while(!indexes.isEmpty()){
+        Integer total = probabilities.stream().reduce((a,b) -> a+b).get();
 
-            Collections.shuffle(indexes);
+        this.vector = probabilities.stream().map(val -> {
+            double ratio = Double.valueOf(val) / Double.valueOf(total);
 
-            Integer index = indexes.get(0);
-            Double limit = 1.0 - acc;
-            Double partialLimit = 0.9 * limit;
-            Double val = Math.random()*partialLimit;
-            if (indexes.size() == 1){
-                val = limit;
+            if (ratio == 0.0){
+                System.out.println("val:" + val + " / total: " + total);
+
             }
-            if (val == 0.0){
-                val = limit/indexes.size();
-            }
-            vector[index]= val;
-            acc += val;
-            indexes.remove(index);
-        }
 
-        this.vector = Arrays.asList(vector);
+            return ratio;
+
+        }).collect(Collectors.toList());
     }
 
     public DirichletDistribution(String id, List<Double> vector){
         this.id = id;
         this.vector = vector;
+    }
+
+    @JsonIgnore
+    public Integer getHighestTopic(){
+        return IntStream.range(0,vector.size())
+                .reduce((a,b) -> (vector.get(a) > vector.get(b)? a : b))
+                .getAsInt();
+    }
+
+    @JsonIgnore
+    public Integer getLowestTopic(){
+        return IntStream.range(0,vector.size())
+                .reduce((a,b) -> (vector.get(a) < vector.get(b)? a : b))
+                .getAsInt();
+    }
+
+    @JsonIgnore
+    public String getSortedTopics(Integer top){
+        return IntStream
+                .range(0,vector.size())
+                .mapToObj(i -> new Tuple2<Integer,Double>(i,vector.get(i)))
+                .sorted( (a,b) -> -a._2.compareTo(b._2))
+                .map( t -> String.valueOf(t._1))
+                .limit(top)
+                .collect(Collectors.joining("|"));
+    }
+
+    @JsonIgnore
+    public String getSortedTopics(Double threshold){
+        List<Tuple2<Integer, Double>> topics = IntStream
+                .range(0, vector.size())
+                .mapToObj(i -> new Tuple2<Integer, Double>(i, vector.get(i)))
+                .sorted((a, b) -> -a._2.compareTo(b._2))
+                .collect(Collectors.toList());
+
+        Integer maxIndex = 0;
+        Double accumulated = 0.0;
+        for(Tuple2<Integer, Double> topic : topics){
+
+            accumulated += topic._2;
+            maxIndex += 1;
+
+            if (accumulated >= threshold) break;
+
+        }
+        return topics.stream()
+                .map( t -> String.valueOf(t._1))
+                .limit(maxIndex)
+                .collect(Collectors.joining("|"));
+
+    }
+
+    @JsonIgnore
+    public DoubleSummaryStatistics getStats(){
+        return vector.stream().collect(DoubleSummaryStatistics::new, DoubleSummaryStatistics::accept, DoubleSummaryStatistics::combine);
     }
 }

@@ -15,8 +15,7 @@ import org.librairy.boot.model.domain.resources.Item;
 import org.librairy.boot.storage.dao.DomainsDao;
 import org.librairy.boot.storage.generator.URIGenerator;
 import org.librairy.eval.Config;
-import org.librairy.eval.algorithms.EntropyAlgorithm;
-import org.librairy.eval.algorithms.GradientAlgorithm;
+import org.librairy.eval.algorithms.TDCAlgorithm;
 import org.librairy.eval.dao.ShapeDao;
 import org.librairy.eval.expressions.DistributionExpression;
 import org.librairy.eval.expressions.GradientExpression;
@@ -133,35 +132,35 @@ public class RealGradientBasedExperiment extends AbstractExperiment {
         threshold = 0.75;
         StringBuilder summary = new StringBuilder();
         summary.append(IntStream.range(0, 1)
-                .mapToObj(i -> evaluationOf(maxSize, numTopics, threshold, new GradientAlgorithm(ratio)))
+                .mapToObj(i -> evaluationOf(maxSize, numTopics, threshold, new TDCAlgorithm(ratio)))
                 .map(r -> r.toString())
                 .collect(Collectors.joining("\n"))).append("\n");
 
         ratio = 0.90;
         threshold = 0.75;
         summary.append(IntStream.range(0, 1)
-                .mapToObj(i -> evaluationOf(maxSize, numTopics, threshold, new GradientAlgorithm(ratio)))
+                .mapToObj(i -> evaluationOf(maxSize, numTopics, threshold, new TDCAlgorithm(ratio)))
                 .map(r -> r.toString())
                 .collect(Collectors.joining("\n"))).append("\n");
 
         ratio = 0.85;
         threshold = 0.75;
         summary.append(IntStream.range(0, 1)
-                .mapToObj(i -> evaluationOf(maxSize, numTopics, threshold, new GradientAlgorithm(ratio)))
+                .mapToObj(i -> evaluationOf(maxSize, numTopics, threshold, new TDCAlgorithm(ratio)))
                 .map(r -> r.toString())
                 .collect(Collectors.joining("\n"))).append("\n");
 
         ratio = 0.99;
         threshold = 0.6;
         summary.append(IntStream.range(0, 1)
-                .mapToObj(i -> evaluationOf(maxSize, numTopics, threshold, new GradientAlgorithm(ratio)))
+                .mapToObj(i -> evaluationOf(maxSize, numTopics, threshold, new TDCAlgorithm(ratio)))
                 .map(r -> r.toString())
                 .collect(Collectors.joining("\n"))).append("\n");
 
         ratio = 0.99;
         threshold = 0.5;
         summary.append(IntStream.range(0, 1)
-                .mapToObj(i -> evaluationOf(maxSize, numTopics, threshold, new GradientAlgorithm(ratio)))
+                .mapToObj(i -> evaluationOf(maxSize, numTopics, threshold, new TDCAlgorithm(ratio)))
                 .map(r -> r.toString())
                 .collect(Collectors.joining("\n"))).append("\n");
 

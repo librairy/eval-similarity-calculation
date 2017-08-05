@@ -1,0 +1,7 @@
+Size	CRDC	DBSCAN	K-Means	RDC	Random	TDC	
+200	Result(algorithm=CRDC, size=200, topics=44, minScore=0.83, tp=3188, tn=35986, fp=216, fn=610, precision=0.936545240893067, recall=0.8393891521853607, clusters=44, totalSimilarities=40000, calculatedSimilarities=3604, minimumSimilarities=3798, time=24)
+Result(algorithm=DBSCAN, size=200, topics=44, minScore=0.83, tp=3798, tn=200, fp=36002, fn=0, precision=0.09542713567839196, recall=1.0, clusters=1, totalSimilarities=40000, calculatedSimilarities=40004, minimumSimilarities=3798, time=109)
+Result(algorithm=K-Means, size=200, topics=44, minScore=0.83, tp=2260, tn=36144, fp=58, fn=1538, precision=0.9749784296807593, recall=0.5950500263296472, clusters=44, totalSimilarities=40000, calculatedSimilarities=442518, minimumSimilarities=3798, time=139)
+Result(algorithm=RDC, size=200, topics=44, minScore=0.83, tp=3628, tn=28310, fp=7892, fn=170, precision=0.31493055555555555, recall=0.9552395997893628, clusters=7, totalSimilarities=40000, calculatedSimilarities=11720, minimumSimilarities=3798, time=9)
+Result(algorithm=Random, size=200, topics=44, minScore=0.83, tp=84, tn=35540, fp=662, fn=3714, precision=0.1126005361930295, recall=0.022116903633491312, clusters=44, totalSimilarities=40000, calculatedSimilarities=946, minimumSimilarities=3798, time=2)
+Result(algorithm=TDC, size=200, topics=44, minScore=0.83, tp=3098, tn=31868, fp=4334, fn=700, precision=0.41684607104413346, recall=0.8156924697209057, clusters=25, totalSimilarities=40000, calculatedSimilarities=7632, minimumSimilarities=3798, time=7)

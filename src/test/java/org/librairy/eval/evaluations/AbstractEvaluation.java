@@ -11,10 +11,10 @@ import com.google.common.primitives.Doubles;
 import org.apache.commons.lang3.StringUtils;
 import org.librairy.eval.expressions.DistributionExpression;
 import org.librairy.eval.algorithms.Algorithm;
+import org.librairy.eval.metrics.SimilarityMetric;
 import org.librairy.eval.model.DirichletDistribution;
 import org.librairy.eval.model.Result;
 import org.librairy.eval.model.Similarity;
-import org.librairy.metrics.similarity.JensenShannonSimilarity;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
  */
 public abstract class AbstractEvaluation {
 
-    protected Map<String,List<Similarity>> createGoldStandard(List<DirichletDistribution> vectors, Double threshold){
+    protected Map<String,List<Similarity>> createGoldStandard(List<DirichletDistribution> vectors, Double threshold, SimilarityMetric metric){
         Map<String,List<Similarity>> goldStandard = new HashMap<>();
         for(DirichletDistribution dd : vectors){
             List<Similarity> topSimilar = vectors.stream()
@@ -37,7 +37,7 @@ public abstract class AbstractEvaluation {
                     .map(v -> {
                         Similarity sim = new Similarity();
                         sim.setId(v.getId());
-                        sim.setScore(JensenShannonSimilarity.apply(Doubles.toArray(dd.getVector()), Doubles.toArray(v.getVector())));
+                        sim.setScore(metric.apply(Doubles.toArray(dd.getVector()), Doubles.toArray(v.getVector())));
                         return sim;
                     })
                     .sorted((v1, v2) -> -v1.getScore().compareTo(v2.getScore()))
@@ -46,10 +46,15 @@ public abstract class AbstractEvaluation {
                     .collect(Collectors.toList());
             goldStandard.put(dd.getId(), topSimilar);
         }
+
+        Integer total = goldStandard.entrySet().stream().map(entry -> entry.getValue().size()).reduce((a, b) -> a + b).get();
+        System.out.println("GoldStandard Ratio: " + Double.valueOf(total) / Double.valueOf(goldStandard.size()));
+
         return goldStandard;
     }
 
-    public Result evaluationOf(Integer numVectors, Integer numTopics, Double threshold, List<DirichletDistribution> vectors, Map<String,List<Similarity>> goldStandard, Algorithm algorithm){
+
+    public Result evaluationOf(Integer numVectors, Integer numTopics, Double threshold, List<DirichletDistribution> vectors, Map<String,List<Similarity>> goldStandard, Algorithm algorithm, SimilarityMetric metric){
 
         // Recommendations based on algorithm
         Instant start   = Instant.now();
@@ -72,13 +77,13 @@ public abstract class AbstractEvaluation {
             List<DirichletDistribution> related = vectorsByExpression.get(gd.getExpression()).stream().filter(d -> !d.getId().equalsIgnoreCase(gd.getDirichletDistribution().getId())).collect(Collectors.toList());
             List<Similarity> similarities = new ArrayList<>();
             for (DirichletDistribution dd : related){
-                double similarityScore = JensenShannonSimilarity.apply(Doubles.toArray(dd.getVector()), Doubles.toArray(gd.getDirichletDistribution().getVector()));
-                if (similarityScore > threshold){
+                double similarityScore = metric.apply(Doubles.toArray(dd.getVector()), Doubles.toArray(gd.getDirichletDistribution().getVector()));
+//                if (similarityScore > threshold){
                     Similarity sim = new Similarity();
                     sim.setId(dd.getId());
                     sim.setScore(similarityScore);
                     similarities.add(sim);
-                }
+//                }
             }
             List<Similarity> topSimilarities = similarities.stream().sorted((a, b) -> -a.getScore().compareTo(b.getScore())).collect(Collectors.toList());
             recommendations.put(gd.getDirichletDistribution().getId(), topSimilarities);
@@ -128,7 +133,7 @@ public abstract class AbstractEvaluation {
 
         Double precision    = (Double.valueOf(tp) + Double.valueOf(fp)) == 0.0? 0.0 : Double.valueOf(tp) / (Double.valueOf(tp) + Double.valueOf(fp));
         Double recall       = (Double.valueOf(tp) + Double.valueOf(fn)) == 0.0? 0.0 : Double.valueOf(tp) / (Double.valueOf(tp) + Double.valueOf(fn));
-        Double fMeasure     = 2* (precision*recall)/(precision+recall);
+        Double fMeasure     = (precision+recall == 0.0)? 0.0 : 2* (precision*recall)/(precision+recall);
 
 
         System.out.println("Precision@"+threshold+"=" + precision);
