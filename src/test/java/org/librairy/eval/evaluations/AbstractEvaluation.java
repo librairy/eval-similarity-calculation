@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 public abstract class AbstractEvaluation {
 
     protected Map<String,List<Similarity>> createGoldStandard(List<DirichletDistribution> vectors, Double threshold, SimilarityMetric metric){
+        Instant start   = Instant.now();
         Map<String,List<Similarity>> goldStandard = new HashMap<>();
         for(DirichletDistribution dd : vectors){
             List<Similarity> topSimilar = vectors.stream()
@@ -47,6 +48,9 @@ public abstract class AbstractEvaluation {
             goldStandard.put(dd.getId(), topSimilar);
         }
 
+        Instant end     = Instant.now();
+        long time = Duration.between(start, end).toMillis();
+        System.out.println("GoldStandard created at: " + time + "msecs");
         Integer total = goldStandard.entrySet().stream().map(entry -> entry.getValue().size()).reduce((a, b) -> a + b).get();
         System.out.println("GoldStandard Ratio: " + Double.valueOf(total) / Double.valueOf(goldStandard.size()));
 
@@ -59,8 +63,7 @@ public abstract class AbstractEvaluation {
         // Recommendations based on algorithm
         Instant start   = Instant.now();
         List<DistributionExpression> shapes = algorithm.getShapesFrom(vectors);
-        Instant end     = Instant.now();
-        long time = Duration.between(start, end).toMillis();
+
 
         Map<String,List<DirichletDistribution>> vectorsByExpression = new HashMap<>();
         for(DistributionExpression gd : shapes){
@@ -88,7 +91,8 @@ public abstract class AbstractEvaluation {
             List<Similarity> topSimilarities = similarities.stream().sorted((a, b) -> -a.getScore().compareTo(b.getScore())).collect(Collectors.toList());
             recommendations.put(gd.getDirichletDistribution().getId(), topSimilarities);
         }
-
+        Instant end     = Instant.now();
+        long time = Duration.between(start, end).toMillis();
 
         // Results
         Integer tp = 0;
@@ -120,6 +124,7 @@ public abstract class AbstractEvaluation {
 
         System.out.println(StringUtils.repeat("=",50));
         System.out.println("Algorithm: " + algorithm);
+        System.out.println("Time: " + time + "msecs");
         System.out.println("Num Vectors: " + numVectors);
         System.out.println("Num Topics: " + numTopics);
         System.out.println("Min Score: " + threshold);

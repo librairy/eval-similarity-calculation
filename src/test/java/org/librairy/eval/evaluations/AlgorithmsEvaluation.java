@@ -43,8 +43,8 @@ public class AlgorithmsEvaluation extends AbstractEvaluation {
     Map<String,Algorithm> algorithms;
 
     Double minScore             = 0.34  ; // 0.83
-    List<Integer> sizes = Arrays.asList(new Integer[]{200,300,400,500,600,700,800,900,1000});
-//    List<Integer> sizes = Arrays.asList(new Integer[]{1000});
+//    List<Integer> sizes = Arrays.asList(new Integer[]{200,300,400,500,600,700,800,900,1000});
+    List<Integer> sizes = Arrays.asList(new Integer[]{1000});
 
 
     @Before

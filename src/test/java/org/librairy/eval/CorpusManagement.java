@@ -33,7 +33,7 @@ public class CorpusManagement {
     @Test
     public void createReal() throws IOException {
 
-        String domainUri = "http://librairy.linkeddata.es/resources/domains/aies6";
+        String domainUri = "http://librairy.linkeddata.es/resources/domains/blueBottle";
 
         Corpora corpora = new Corpora();
         corpora.setDocuments(shapeDao.get(domainUri));
