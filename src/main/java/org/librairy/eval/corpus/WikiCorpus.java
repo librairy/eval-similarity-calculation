@@ -103,8 +103,8 @@ public class WikiCorpus {
                         request.setText(text);
 
                         if (counter.get() <= numArticles){
-                            writer1.write(jsonMapper.writeValueAsString(newDistribution(url, Unirest.post("http://localhost:8080/shape").body(request).asJson()))+"\n");
-                            writer2.write(jsonMapper.writeValueAsString(newDistribution(url, Unirest.post("http://localhost:8081/shape").body(request).asJson()))+"\n");
+                            writer1.write(jsonMapper.writeValueAsString(newDistribution(url, Unirest.post("http://librairy.linkeddata.es/20news-model/shape").body(request).asJson()))+"\n");
+                            writer2.write(jsonMapper.writeValueAsString(newDistribution(url, Unirest.post("http://librairy.linkeddata.es/wiki-model/shape").body(request).asJson()))+"\n");
                         }
 
                     }catch (Exception e){
