@@ -1,27 +1,43 @@
 package org.librairy.eval.model;
 
-import lombok.Data;
-
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * @author Badenes Olmedo, Carlos <cbadenes@fi.upm.es>
  */
-@Data
 public class Related {
 
     DirichletDistribution distribution;
 
     Double score = 0.0;
 
-    public String toString(){
+    public Related(DirichletDistribution distribution, Double score) {
+        this.distribution = distribution;
+        this.score = score;
+    }
 
-        NumberFormat formatter = new DecimalFormat("#0.00");
+    public DirichletDistribution getDistribution() {
+        return distribution;
+    }
 
-        return "["+formatter.format(score)+"] - [" +formatter.format(distribution.getStats().getAverage())+"/"+formatter.format(distribution.getStats().getMin()) +"/"+formatter.format(distribution.getStats().getMax())+"] - ["+distribution.getSortedTopics(0.95)+"]";
+    public void setDistribution(DirichletDistribution distribution) {
+        this.distribution = distribution;
+    }
 
+    public Double getScore() {
+        return score;
+    }
+
+    public void setScore(Double score) {
+        this.score = score;
+    }
+
+    @Override
+    public String toString() {
+        return "Related{" +
+                "distribution=" + distribution +
+                ", score=" + score +
+                '}';
     }
 }

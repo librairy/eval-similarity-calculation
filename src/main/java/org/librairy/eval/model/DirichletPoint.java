@@ -1,13 +1,11 @@
 package org.librairy.eval.model;
 
 import com.google.common.primitives.Doubles;
-import lombok.Data;
 import org.apache.commons.math3.ml.clustering.Clusterable;
 
 /**
  * @author Badenes Olmedo, Carlos <cbadenes@fi.upm.es>
  */
-@Data
 public class DirichletPoint implements Clusterable{
 
 
@@ -20,4 +18,8 @@ public class DirichletPoint implements Clusterable{
         this.distribution = dirichletDistribution;
     }
 
+    @Override
+    public double[] getPoint() {
+        return point;
+    }
 }

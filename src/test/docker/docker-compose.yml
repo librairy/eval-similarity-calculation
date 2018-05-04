@@ -1,0 +1,16 @@
+version: '2'
+services:
+  nlp-en-service:
+    image: librairy/nlp-en-service:latest
+  wiki-model:
+    image: librairy/wiki-en-model:200
+    ports:
+     - "8081:7777"
+    environment:
+     - JAVA_OPTS=-Xmx4096m
+  20news-model:
+    image: librairy/20newsgroups:20
+    ports:
+     - "8080:7777"
+    environment:
+     - JAVA_OPTS=-Xmx4096m
