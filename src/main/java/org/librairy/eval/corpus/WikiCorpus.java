@@ -142,11 +142,4 @@ public class WikiCorpus {
         return dirichletDistribution;
     }
 
-
-    public static void main(String[] args) {
-        WikiCorpus corpus = new WikiCorpus();
-
-        corpus.createVectors(1000000);
-    }
-
 }

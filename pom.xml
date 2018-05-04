@@ -88,19 +88,11 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>${maven.surefire.plugin.version}</version>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.apache.maven.surefire</groupId>
-                        <artifactId>surefire-junit47</artifactId>
-                        <version>${surefire.junit.version}</version>
-                    </dependency>
-                </dependencies>
+                <version>2.11</version>
                 <configuration>
-                    <includes>
-                        <include>**/*.class</include>
-                    </includes>
-                    <excludedGroups>es.cbadenes.lab.test.IntegrationTest</excludedGroups>
+                    <excludes>
+                        <exclude>%regex[.*IntTest.*]</exclude>
+                    </excludes>
                 </configuration>
             </plugin>
 
