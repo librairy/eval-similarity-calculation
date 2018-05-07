@@ -1,4 +1,4 @@
-package org.librairy.eval.corpus;
+package org.librairy.eval.model;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -7,9 +7,6 @@ import com.google.common.base.Strings;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.http.exceptions.UnirestException;
-import org.eclipse.jetty.util.BlockingArrayQueue;
-import org.librairy.eval.model.DirichletDistribution;
 import org.librairy.service.modeler.facade.rest.model.ShapeRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,11 +15,9 @@ import java.io.*;
 import java.net.URL;
 import java.util.*;
 import java.util.concurrent.LinkedBlockingDeque;
-import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -30,9 +25,9 @@ import java.util.zip.GZIPOutputStream;
  * @author Badenes Olmedo, Carlos <cbadenes@fi.upm.es>
  */
 
-public class WikiCorpus {
+public class Corpus {
 
-    private static final Logger LOG = LoggerFactory.getLogger(WikiCorpus.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Corpus.class);
 
     private static final String CORPUS_URL = "https://delicias.dia.fi.upm.es/nextcloud/index.php/s/4tPyd5Ps51sCuRx/download";
 
@@ -63,12 +58,21 @@ public class WikiCorpus {
                 }
             }
         });
+
     }
 
-    public void createVectors(Integer numArticles){
+    private final String filePath;
+
+    public Corpus(String filePath) {
+        this.filePath = filePath;
+    }
+
+    public void createVectors(Integer numArticles, Integer parallel){
         BufferedReader reader;
         try {
-            reader = new BufferedReader(new InputStreamReader(new GZIPInputStream(new URL(CORPUS_URL).openStream())));
+
+            InputStream inputStream = (filePath.startsWith("http"))? new URL(CORPUS_URL).openStream() : new FileInputStream(filePath);
+            reader = new BufferedReader(new InputStreamReader(new GZIPInputStream(inputStream)));
 
             File outputFile1 = new File("src/main/resources/wiki1M_20news.jsonl.gz");
             if (outputFile1.exists()) outputFile1.delete();
@@ -82,11 +86,11 @@ public class WikiCorpus {
             String line;
             ObjectMapper jsonMapper = new ObjectMapper();
             AtomicInteger counter = new AtomicInteger();
-            AtomicInteger it = new AtomicInteger();
+            AtomicInteger totalCounter = new AtomicInteger();
             Integer interval = numArticles < 1000? 100 : numArticles / 1000;
 
 
-            ThreadPoolExecutor executor = new ThreadPoolExecutor(10, 10, 0l, TimeUnit.MILLISECONDS, new LinkedBlockingDeque(10), new ThreadPoolExecutor.CallerRunsPolicy());
+            ThreadPoolExecutor executor = new ThreadPoolExecutor(parallel, parallel, 0l, TimeUnit.MILLISECONDS, new LinkedBlockingDeque(10), new ThreadPoolExecutor.CallerRunsPolicy());
             while(!Strings.isNullOrEmpty(line = reader.readLine()) && counter.get() < numArticles ){
 
                 com.fasterxml.jackson.databind.JsonNode json = jsonMapper.readTree(line);
@@ -112,7 +116,7 @@ public class WikiCorpus {
                     }
 
                 });
-
+                if (totalCounter.incrementAndGet() % 100 == 0) Thread.sleep(200);
             }
 
             LOG.info("waiting to finish..");
