@@ -1,7 +1,7 @@
 package org.librairy.corpus;
 
 import org.junit.Test;
-import org.librairy.eval.model.Corpus;
+import org.librairy.eval.model.WikiCorpus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,8 +18,8 @@ public class WikiCorpusIntTest {
 
         String url = "https://delicias.dia.fi.upm.es/nextcloud/index.php/s/4tPyd5Ps51sCuRx/download";
 
-        Corpus corpus = new Corpus(url);
-        corpus.createVectors(1000000,5);
+        WikiCorpus corpus = new WikiCorpus(url);
+        corpus.createVectors(1000000,10000,5);
 
     }
 
