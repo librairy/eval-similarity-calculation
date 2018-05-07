@@ -1,0 +1,2 @@
+nohup mvn -Dtest=WikiCorpusIntTest > nohup.log 2>&1 &
+echo $! > nohup.pid
