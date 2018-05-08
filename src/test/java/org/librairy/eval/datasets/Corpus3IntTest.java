@@ -16,8 +16,8 @@ public class Corpus3IntTest extends AbstractCorpus{
     public void prepare(){
 
         String baseDir          = "src/main/resources/test3";
-        Integer trainingSize    = 1000000;
-        Integer testSize        = 1000;
+        Integer trainingSize    = 10000;
+        Integer testSize        = 100;
         Integer topPoints       = 25;
         Integer minTextSize     = 2000;
         String endpoint         = "http://librairy.linkeddata.es/20news-model"; // 20 dimension

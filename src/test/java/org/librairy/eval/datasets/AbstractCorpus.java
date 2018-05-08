@@ -103,7 +103,7 @@ public abstract class AbstractCorpus {
                 List<Point> points = new ArrayList<>();
                 executor = new ParallelExecutor();
                 Optional<WikiArticle> row;
-                while((row = reader.next()).isPresent() && trainingCounter.incrementAndGet() <= trainingSize){
+                while((row = reader.next()).isPresent() && trainingCounter.get() < trainingSize){
 
                     final WikiArticle article = row.get();
 
@@ -111,6 +111,14 @@ public abstract class AbstractCorpus {
                         try{
                             String text = article.getText();
                             if (text.length() < minTextSize) return;
+
+                            Integer index = trainingCounter.incrementAndGet();
+                            if (index > trainingSize) return;
+
+                            if (index % trainingInterval == 0) {
+                                LOG.info(trainingCounter.get() + " training points added");
+                                Thread.sleep(20);
+                            }
 
                             ShapeRequest request = new ShapeRequest();
                             request.setText(text);
@@ -125,15 +133,10 @@ public abstract class AbstractCorpus {
                         }
 
                     });
-                    if (trainingCounter.get() % trainingInterval == 0) {
-                        LOG.info(trainingCounter.get() + " training points added");
-                        Thread.sleep(20);
-                    }
                 }
                 executor.pause();
-                LOG.info(trainingCounter.get()-1 + " training points completed");
 
-                while((row = reader.next()).isPresent() && testCounter.incrementAndGet() <= testSize){
+                while((row = reader.next()).isPresent() && testCounter.get() < testSize){
 
                     final WikiArticle article = row.get();
 
@@ -141,6 +144,15 @@ public abstract class AbstractCorpus {
                         try{
                             String text = article.getText();
                             if (text.length() < minTextSize) return;
+
+                            int index = testCounter.incrementAndGet();
+                            if (index > testSize) return;
+
+                            if (index % testInterval == 0) {
+                                LOG.info(testCounter.get() + " test points added");
+                                Thread.sleep(20);
+                            }
+
 
                             ShapeRequest request = new ShapeRequest();
                             request.setText(text);
@@ -163,13 +175,9 @@ public abstract class AbstractCorpus {
                         }
 
                     });
-                    if (testCounter.get() % testInterval == 0) {
-                        LOG.info(testCounter.get() + " test points completed");
-                        Thread.sleep(20);
-                    }
+
                 }
                 executor.stop();
-                LOG.info(testCounter.get()-1 + " test points added");
 
             }catch(Exception e){
                 LOG.error("Unexpected error",e);
