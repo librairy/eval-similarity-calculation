@@ -1,0 +1,1 @@
+wget "https://delicias.dia.fi.upm.es/nextcloud/index.php/s/DLg0VPKCW42hihr/download" -O test-set.jsonl.gz
