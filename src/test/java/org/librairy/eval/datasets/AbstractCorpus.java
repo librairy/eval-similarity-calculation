@@ -19,12 +19,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -87,8 +85,11 @@ public abstract class AbstractCorpus {
         JsonlWriter<Point> trainingWriter;
         JsonlWriter<Neighbourhood> testWriter;
         try {
-            //"https://delicias.dia.fi.upm.es/nextcloud/index.php/s/4tPyd5Ps51sCuRx/download";
-            reader = new JsonlReader<>(new File("/Users/cbadenes/Corpus/wikipedia-articles/all-articles.jsonl.gz"), WikiArticle.class);
+            Properties properties = new Properties();
+            FileInputStream input = new FileInputStream("src/test/resources/parameters.properties");
+            properties.load(input);
+
+            reader = new JsonlReader<>(new File(properties.getProperty("wiki.path")), WikiArticle.class);
 
             trainingWriter  = new JsonlWriter<>(Paths.get(baseDir, "training-set.jsonl.gz").toFile());
             testWriter      = new JsonlWriter<>(Paths.get(baseDir, "test-set.jsonl.gz").toFile());
