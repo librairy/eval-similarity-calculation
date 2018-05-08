@@ -7,7 +7,7 @@
 
 package org.librairy.eval.expressions;
 
-import org.librairy.eval.model.DirichletDistribution;
+import org.librairy.eval.model.Point;
 
 /**
  * @author Badenes Olmedo, Carlos <cbadenes@fi.upm.es>
@@ -16,12 +16,12 @@ public class DistributionExpression {
 
     String expression;
 
-    DirichletDistribution dirichletDistribution;
+    Point dirichletDistribution;
 
     public DistributionExpression() {
     }
 
-    public DistributionExpression(String expression, DirichletDistribution dirichletDistribution) {
+    public DistributionExpression(String expression, Point dirichletDistribution) {
         this.expression = expression;
         this.dirichletDistribution = dirichletDistribution;
     }
@@ -34,11 +34,11 @@ public class DistributionExpression {
         this.expression = expression;
     }
 
-    public DirichletDistribution getDirichletDistribution() {
+    public Point getDirichletDistribution() {
         return dirichletDistribution;
     }
 
-    public void setDirichletDistribution(DirichletDistribution dirichletDistribution) {
+    public void setDirichletDistribution(Point dirichletDistribution) {
         this.dirichletDistribution = dirichletDistribution;
     }
 
