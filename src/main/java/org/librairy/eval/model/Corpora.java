@@ -7,17 +7,17 @@ import java.util.List;
  */
 public class Corpora {
 
-    List<DirichletDistribution> documents;
+    List<Point> documents;
 
-    public Corpora(List<DirichletDistribution> documents) {
+    public Corpora(List<Point> documents) {
         this.documents = documents;
     }
 
-    public List<DirichletDistribution> getDocuments() {
+    public List<Point> getDocuments() {
         return documents;
     }
 
-    public void setDocuments(List<DirichletDistribution> documents) {
+    public void setDocuments(List<Point> documents) {
         this.documents = documents;
     }
 
