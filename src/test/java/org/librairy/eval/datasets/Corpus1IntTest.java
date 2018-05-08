@@ -8,9 +8,9 @@ import org.slf4j.LoggerFactory;
  * @author Badenes Olmedo, Carlos <cbadenes@fi.upm.es>
  */
 
-public class Test1Corpus extends AbstractCorpus{
+public class Corpus1IntTest extends AbstractCorpus{
 
-    private static final Logger LOG = LoggerFactory.getLogger(Test1Corpus.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Corpus1IntTest.class);
 
     @Test
     public void prepare(){
