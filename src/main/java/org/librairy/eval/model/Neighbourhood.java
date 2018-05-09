@@ -22,6 +22,12 @@ public class Neighbourhood {
     public Neighbourhood() {
     }
 
+    public Neighbourhood(Point reference, List<Neighbour> closestNeighbours) {
+        this.reference = reference;
+        this.closestNeighbours = closestNeighbours;
+        this.numberOfNeighbours = closestNeighbours.size();
+    }
+
     public Point getReference() {
         return reference;
     }

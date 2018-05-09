@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 /**
  * @author Badenes Olmedo, Carlos <cbadenes@fi.upm.es>
@@ -33,14 +34,14 @@ public class Evaluation {
     public Evaluation(String baseDir) {
         this.baseDir        = baseDir;
         this.trainingSet    = Paths.get(baseDir,"training-set.jsonl.gz");
-        this.testSet        = Paths.get(baseDir,"testing-set.jsonl.gz");
+        this.testSet        = Paths.get(baseDir,"test-set.jsonl.gz");
     }
 
-    public void execute(List<ClustererAlgorithm> algorithms, Integer numNeighbours){
+    public void execute(String testId, List<ClustererAlgorithm> algorithms, Integer numNeighbours){
 
         LOG.info("Ready to evaluate the following algorithm: " + algorithms);
         ConcurrentHashMap<String,Report> reports = new ConcurrentHashMap<>();
-        algorithms.forEach( algorithm -> reports.put(algorithm.getId(), new Report(algorithm)));
+        algorithms.forEach( algorithm -> reports.put(algorithm.getId(), new Report(testId, algorithm)));
 
         ParallelExecutor executor = new ParallelExecutor();
         try {
@@ -84,20 +85,21 @@ public class Evaluation {
             AtomicInteger testCounter = new AtomicInteger();
             while((testNeighbourhood = readerTest.next()).isPresent()){
                 if (testCounter.incrementAndGet() % 100 == 0) {
-                    LOG.info(trainingCounter.get() + " points tested");
+                    LOG.info(testCounter.get() + " points tested");
                     Thread.currentThread().sleep(20);
                 }
-                final Neighbourhood referenceNeighbourhood = testNeighbourhood.get();
+                Neighbourhood rNeighbourhood = testNeighbourhood.get();
+                final Neighbourhood referenceNeighbourhood = new Neighbourhood(rNeighbourhood.getReference(), rNeighbourhood.getClosestNeighbours().stream().limit(numNeighbours).collect(Collectors.toList()));
                 for (ClustererAlgorithm algorithm: algorithms){
-                    executor.execute(() -> {
+//                    executor.execute(() -> {
                         Report report = reports.get(algorithm.getId());
                         report.update(referenceNeighbourhood, algorithm.getNeighbourhood(referenceNeighbourhood.getReference(), numNeighbours));
                         reports.put(algorithm.getId(), report);
-                    });
+//                    });
                 }
             }
             executor.pause();
-            LOG.info(trainingCounter.get() + " points tested");
+            LOG.info(testCounter.get() + " points tested");
 
             // Update reports size
             for (ClustererAlgorithm algorithm: algorithms){
@@ -112,9 +114,12 @@ public class Evaluation {
             // Print results
             LOG.info("writing reports ..");
             SimpleDateFormat dateFormatter = new SimpleDateFormat("YYYYMMdd'T'HHmmss");
-            String fileName = dateFormatter.format(new Date())+"-reports.json";
-            JsonlWriter<Report> writer = new JsonlWriter(Paths.get(baseDir,fileName).toFile());
-            reports.entrySet().forEach(entry -> writer.write(entry.getValue()));
+            String fileName = dateFormatter.format(new Date())+"-reports.jsonl.gz";
+            JsonlWriter<Report> writer = new JsonlWriter(Paths.get(baseDir,"results",fileName).toFile());
+            reports.entrySet().stream().sorted((a,b) -> a.getKey().compareTo(b.getKey())).forEach(entry -> {
+                writer.write(entry.getValue());
+                LOG.info(""+entry.getValue());
+            });
             writer.close();
             LOG.info("evaluations completed!");
 
