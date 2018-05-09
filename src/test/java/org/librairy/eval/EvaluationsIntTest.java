@@ -21,12 +21,19 @@ public class EvaluationsIntTest {
 
     @Test
     public void test1(){
-        runTest("test1",Arrays.asList(new ClustererAlgorithm[]{new CRDCAlgorithm(0.2), new ADimAlgorithm(0.1)}),25);
+        runTest("test1",Arrays.asList(new ClustererAlgorithm[]{new CRDCAlgorithm(0.1), new ADimAlgorithm(0.001)}),25);
     }
 
     @Test
     public void test2(){
-        runTest("test2",Arrays.asList(new ClustererAlgorithm[]{new CRDCAlgorithm(0.2), new ADimAlgorithm(0.1)}),25);
+        runTest("test2",Arrays.asList(new ClustererAlgorithm[]{
+                new CRDCAlgorithm(0.05),
+                new CRDCAlgorithm(0.1),
+                new CRDCAlgorithm(0.2),
+                new ADimAlgorithm(0.05),
+                new ADimAlgorithm(0.1),
+                new ADimAlgorithm(0.2)}
+        ),25);
     }
 
     @Test
