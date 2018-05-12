@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import org.librairy.eval.metrics.JensenShannon;
 import org.librairy.eval.model.Neighbour;
 import org.librairy.eval.model.Neighbourhood;
@@ -102,7 +103,7 @@ public abstract class AbstractCorpus {
 
             try{
                 List<Point> points = new ArrayList<>();
-                executor = new ParallelExecutor();
+                executor = new ParallelExecutor(4);
                 Optional<WikiArticle> row;
                 while((row = reader.next()).isPresent() && trainingCounter.get() < trainingSize){
 
@@ -121,14 +122,12 @@ public abstract class AbstractCorpus {
                                 Thread.sleep(20);
                             }
 
-                            ShapeRequest request = new ShapeRequest();
-                            request.setText(text);
-
-                            HttpResponse<JsonNode> shape = Unirest.post(endpoint+"/shape").body(request).asJson();
-                            Point point = shapeToPoint(article.getUrl(), shape);
-                            trainingWriter.write(point);
-                            points.add(point);
-
+                            HttpResponse<JsonNode> shape = getShape(endpoint, text);
+                            if (shape != null){
+                                Point point = shapeToPoint(article.getUrl(), shape);
+                                trainingWriter.write(point);
+                                points.add(point);
+                            }
                         }catch (Exception e){
                             LOG.error("Error reading document",e);
                         }
@@ -154,15 +153,31 @@ public abstract class AbstractCorpus {
                                 Thread.sleep(20);
                             }
 
-
-                            ShapeRequest request = new ShapeRequest();
-                            request.setText(text);
-
-                            HttpResponse<JsonNode> shape = Unirest.post(endpoint+"/shape").body(request).asJson();
+                            HttpResponse<JsonNode> shape = getShape(endpoint,text);
+                            if (shape == null) {
+                                LOG.warn("Shape is null");
+                                return;
+                            }
                             Point reference = shapeToPoint(article.getUrl(), shape);
 
                             // calculate neighbourhood
-                            List<Neighbour> neighbours  = points.stream().map(point -> new Neighbour(point, JensenShannon.similarity(point.getVector(), reference.getVector()))).sorted((a, b) -> -a.getScore().compareTo(b.getScore())).limit(topPoints).collect(Collectors.toList());
+                            //List<Neighbour> neighbours  = points.stream().map(point -> new Neighbour(point, JensenShannon.similarity(point.getVector(), reference.getVector()))).sorted((a, b) -> -a.getScore().compareTo(b.getScore())).limit(topPoints).collect(Collectors.toList());
+                            List<Neighbour> neighbours  = new ArrayList<Neighbour>();
+                            for(Point point :points){
+
+                                List<Double> v1 = point.getVector();
+                                List<Double> v2 = reference.getVector();
+
+                                Double score = JensenShannon.similarity(v1,v2);
+
+                                Neighbour neighbour = new Neighbour(point,score);
+                                neighbours.add(neighbour);
+                            }
+
+                            if (neighbours.isEmpty()) {
+                                LOG.warn("Neighbours is empty for reference: " + reference.getId());
+                                return;
+                            }
                             Neighbourhood neighbourhood = new Neighbourhood();
                             neighbourhood.setReference(reference);
                             neighbourhood.setClosestNeighbours(neighbours);
@@ -190,6 +205,28 @@ public abstract class AbstractCorpus {
         } catch (Exception e) {
             LOG.error("Unexpected Error", e);
         }
+    }
+
+    private HttpResponse<JsonNode> getShape(String endpoint, String text){
+        HttpResponse<JsonNode> shape = null;
+        Boolean added = false;
+        UnirestException error = null;
+        AtomicInteger retries = new AtomicInteger(5);
+        ShapeRequest request = new ShapeRequest();
+        request.setText(text);
+        do{
+            try{
+                shape = Unirest.post(endpoint+"/shape").body(request).asJson();
+                added = true;
+                error = null;
+            }catch (UnirestException e){
+                error = e;
+            }
+        }while(!added && retries.decrementAndGet() > 0);
+        if (error != null){
+            LOG.warn("Error getting shape",error);
+        }
+        return shape;
     }
 
 }
