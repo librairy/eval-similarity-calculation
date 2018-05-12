@@ -1,11 +1,17 @@
 package org.librairy.eval.model;
 
+import com.sun.org.apache.regexp.internal.RE;
 import org.librairy.eval.algorithms.ClustererAlgorithm;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Badenes Olmedo, Carlos <cbadenes@fi.upm.es>
  */
 public class Report {
+
+    private static final Logger LOG = LoggerFactory.getLogger(Report.class);
+    private String testId;
 
     ClustererAlgorithm algorithm;
 
@@ -30,7 +36,8 @@ public class Report {
     public Report() {
     }
 
-    public Report(ClustererAlgorithm algorithm) {
+    public Report(String testId, ClustererAlgorithm algorithm) {
+        this.testId = testId;
         this.algorithm = algorithm;
     }
 
@@ -50,7 +57,6 @@ public class Report {
     }
 
     public void update(Neighbourhood reference, Neighbourhood custom){
-
         tp += custom.getClosestNeighbours().stream().filter( point -> reference.getClosestNeighbours().contains(point)).count();
         fp += custom.getClosestNeighbours().stream().filter( point -> !reference.getClosestNeighbours().contains(point)).count();
         fn += reference.getClosestNeighbours().stream().filter( point -> !custom.getClosestNeighbours().contains(point)).count();
@@ -167,5 +173,28 @@ public class Report {
 
     public void setTestSize(Long testSize) {
         this.testSize = testSize;
+    }
+
+    @Override
+    public String toString() {
+        return "Report{" +
+                "test=" + testId +
+                ", algorithm=" + algorithm +
+                ", tp=" + tp +
+                ", fp=" + fp +
+                ", fn=" + fn +
+                ", numberOfClusters=" + numberOfClusters +
+                ", maxSimilarities=" + maxSimilarities +
+                ", calculatedSimilarities=" + calculatedSimilarities +
+                ", minSimilarities=" + minSimilarities +
+                ", trainingSize=" + trainingSize +
+                ", testSize=" + testSize +
+                ", precision=" + getPrecision()+
+                ", recall=" + getRecall()+
+                ", fMeasure=" + getFMeasure()+
+                ", cost=" + getCost()+
+                ", effectiveness=" + getEffectiveness()+
+                ", efficiency=" + getEfficiency()+
+                '}';
     }
 }

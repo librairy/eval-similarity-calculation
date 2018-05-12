@@ -14,16 +14,23 @@ import java.util.concurrent.TimeUnit;
 public class ParallelExecutor {
 
     private static final Logger LOG = LoggerFactory.getLogger(ParallelExecutor.class);
+    private final int size;
 
     private ThreadPoolExecutor executor;
 
 
     public ParallelExecutor() {
         initialize();
+        this.size = -1;
+    }
+
+    public ParallelExecutor(Integer size) {
+        initialize();
+        this.size = size;
     }
 
     private void initialize(){
-        Integer parallel = Runtime.getRuntime().availableProcessors()-1;
+        Integer parallel = size > 0? size : Runtime.getRuntime().availableProcessors()-1;
         this.executor = new ThreadPoolExecutor(parallel,parallel,0l, TimeUnit.MILLISECONDS, new LinkedBlockingDeque<>(parallel), new ThreadPoolExecutor.CallerRunsPolicy());
     }
 

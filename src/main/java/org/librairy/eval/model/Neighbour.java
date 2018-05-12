@@ -9,6 +9,9 @@ public class Neighbour {
 
     Double score = 0.0;
 
+    public Neighbour() {
+    }
+
     public Neighbour(Point distribution, Double score) {
         this.point = distribution;
         this.score = score;

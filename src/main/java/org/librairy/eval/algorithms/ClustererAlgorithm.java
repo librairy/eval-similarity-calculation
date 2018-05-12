@@ -28,6 +28,14 @@ public interface ClustererAlgorithm {
      */
     Neighbourhood getNeighbourhood(Point point, Integer size);
 
+
+    /**
+     * Locate cluster for a given point
+     * @param point
+     * @return
+     */
+    String getCluster(Point point);
+
     /**
      * Algorithm Label
      * @return

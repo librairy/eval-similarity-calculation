@@ -1,0 +1,1 @@
+wget "https://delicias.dia.fi.upm.es/nextcloud/index.php/s/xEcTmGZKDNyOuK2/download" -O training-set.jsonl.gz

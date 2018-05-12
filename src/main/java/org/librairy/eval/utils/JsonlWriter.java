@@ -28,6 +28,7 @@ public class JsonlWriter<T> {
 
     public JsonlWriter(File jsonFile) throws IOException {
         if (jsonFile.exists()) jsonFile.delete();
+        if (!jsonFile.getParentFile().exists()) jsonFile.getParentFile().mkdirs();
         this.file = jsonFile;
         this.writer = new BufferedWriter(new OutputStreamWriter(new GZIPOutputStream(new FileOutputStream(jsonFile))));
     }
