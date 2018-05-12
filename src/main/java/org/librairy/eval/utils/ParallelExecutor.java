@@ -20,13 +20,13 @@ public class ParallelExecutor {
 
 
     public ParallelExecutor() {
-        initialize();
         this.size = -1;
+        initialize();
     }
 
     public ParallelExecutor(Integer size) {
-        initialize();
         this.size = size;
+        initialize();
     }
 
     private void initialize(){
