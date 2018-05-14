@@ -48,12 +48,12 @@ public class Neighbour {
 
         Neighbour neighbour = (Neighbour) o;
 
-        return point != null ? point.equals(neighbour.point) : neighbour.point == null;
+        return point.equals(neighbour.point);
 
     }
 
     @Override
     public int hashCode() {
-        return point != null ? point.hashCode() : 0;
+        return point.hashCode();
     }
 }
