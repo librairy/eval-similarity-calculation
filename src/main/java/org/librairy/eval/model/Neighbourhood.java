@@ -67,7 +67,7 @@ public class Neighbourhood {
         this.numberOfNeighbours = numberOfNeighbours;
     }
 
-    public void add(Point point){
+    public synchronized void add(Point point){
 
         List<Double> v1 = point.getVector();
         List<Double> v2 = reference.getVector();
