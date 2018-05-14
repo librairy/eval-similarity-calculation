@@ -24,6 +24,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -85,6 +86,7 @@ public abstract class AbstractCorpus {
         ParallelExecutor executor;
         JsonlWriter<Point> trainingWriter;
         JsonlWriter<Neighbourhood> testWriter;
+        ConcurrentHashMap<Point,Neighbourhood> neighbourhoods = new ConcurrentHashMap<>();
         try {
             Properties properties = new Properties();
             FileInputStream input = new FileInputStream("src/test/resources/parameters.properties");
@@ -102,9 +104,43 @@ public abstract class AbstractCorpus {
             Integer testInterval        = Math.min(testSize, 100);
 
             try{
-                List<Point> points = new ArrayList<>();
-                executor = new ParallelExecutor(4);
+                executor = new ParallelExecutor();
                 Optional<WikiArticle> row;
+
+                // Load test points
+                while((row = reader.next()).isPresent() && testCounter.get() < testSize){
+
+                    final WikiArticle article = row.get();
+
+                    executor.execute(() -> {
+                        try{
+                            String text = article.getText();
+                            if (text.length() < minTextSize) return;
+
+                            Integer index = testCounter.incrementAndGet();
+                            if (index > testSize) return;
+
+                            if (index % testInterval== 0) {
+                                LOG.info(testCounter.get() + " test points added");
+                                Thread.sleep(20);
+                            }
+
+                            HttpResponse<JsonNode> shape = getShape(endpoint, text);
+                            if (shape != null){
+                                Point point = shapeToPoint(article.getUrl(), shape);
+                                neighbourhoods.put(point, new Neighbourhood(point,topPoints));
+                            }
+                        }catch (Exception e){
+                            LOG.error("Error reading document",e);
+                            testCounter.decrementAndGet();
+                        }
+
+                    });
+                }
+                executor.pause();
+
+                // Loading training points
+
                 while((row = reader.next()).isPresent() && trainingCounter.get() < trainingSize){
 
                     final WikiArticle article = row.get();
@@ -126,74 +162,26 @@ public abstract class AbstractCorpus {
                             if (shape != null){
                                 Point point = shapeToPoint(article.getUrl(), shape);
                                 trainingWriter.write(point);
-                                points.add(point);
+
+                                for (Point refPoint : neighbourhoods.keySet()){
+                                    neighbourhoods.get(refPoint).add(point);
+                                }
+
                             }
                         }catch (Exception e){
                             LOG.error("Error reading document",e);
                         }
 
                     });
-                }
-                executor.pause();
-
-                while((row = reader.next()).isPresent() && testCounter.get() < testSize){
-
-                    final WikiArticle article = row.get();
-
-                    executor.execute(() -> {
-                        try{
-                            String text = article.getText();
-                            if (text.length() < minTextSize) return;
-
-                            int index = testCounter.incrementAndGet();
-                            if (index > testSize) return;
-
-                            if (index % testInterval == 0) {
-                                LOG.info(testCounter.get() + " test points added");
-                                Thread.sleep(20);
-                            }
-
-                            HttpResponse<JsonNode> shape = getShape(endpoint,text);
-                            if (shape == null) {
-                                LOG.warn("Shape is null");
-                                return;
-                            }
-                            Point reference = shapeToPoint(article.getUrl(), shape);
-
-                            // calculate neighbourhood
-                            //List<Neighbour> neighbours  = points.stream().map(point -> new Neighbour(point, JensenShannon.similarity(point.getVector(), reference.getVector()))).sorted((a, b) -> -a.getScore().compareTo(b.getScore())).limit(topPoints).collect(Collectors.toList());
-                            List<Neighbour> neighbours  = new ArrayList<Neighbour>();
-                            for(Point point :points){
-
-                                List<Double> v1 = point.getVector();
-                                List<Double> v2 = reference.getVector();
-
-                                Double score = JensenShannon.similarity(v1,v2);
-
-                                Neighbour neighbour = new Neighbour(point,score);
-                                neighbours.add(neighbour);
-                            }
-
-                            if (neighbours.isEmpty()) {
-                                LOG.warn("Neighbours is empty for reference: " + reference.getId());
-                                return;
-                            }
-                            Neighbourhood neighbourhood = new Neighbourhood();
-                            neighbourhood.setReference(reference);
-                            neighbourhood.setClosestNeighbours(neighbours);
-                            neighbourhood.setNumberOfNeighbours(topPoints);
-
-                            testWriter.write(neighbourhood);
-
-
-                        }catch (Exception e){
-                            LOG.error("Error reading document",e);
-                        }
-
-                    });
-
                 }
                 executor.stop();
+
+                // write neighbourhoods
+                LOG.info("writing neighbourhoods ..");
+                for(Map.Entry<Point,Neighbourhood> entry : neighbourhoods.entrySet()){
+                    testWriter.write(entry.getValue());
+                }
+                LOG.info("done!");
 
             }catch(Exception e){
                 LOG.error("Unexpected error",e);

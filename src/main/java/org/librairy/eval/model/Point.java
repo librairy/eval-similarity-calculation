@@ -88,13 +88,13 @@ public class Point {
 
         Point point = (Point) o;
 
-        return id != null ? id.equals(point.id) : point.id == null;
+        return id.equals(point.id);
 
     }
 
     @Override
     public int hashCode() {
-        return id != null ? id.hashCode() : 0;
+        return id.hashCode();
     }
 
     @Override
