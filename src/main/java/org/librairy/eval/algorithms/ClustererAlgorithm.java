@@ -42,4 +42,6 @@ public interface ClustererAlgorithm {
      */
     String getId();
 
+    boolean close();
+
 }

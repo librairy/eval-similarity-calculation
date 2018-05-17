@@ -121,6 +121,10 @@ public class Evaluation {
                 LOG.info(""+entry.getValue());
             });
             writer.close();
+
+            // Closing
+            algorithms.forEach(algorithm -> algorithm.close());
+
             LOG.info("evaluations completed!");
 
         } catch (Exception e) {

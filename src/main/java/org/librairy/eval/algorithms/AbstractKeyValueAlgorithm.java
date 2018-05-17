@@ -53,7 +53,8 @@ public abstract class AbstractKeyValueAlgorithm implements ClustererAlgorithm {
         LOG.debug("Creating neighbourhood around " + point + " with "+ size + " neighbours");
         Neighbourhood neighbourhood = new Neighbourhood();
         String label = getCluster(point);
-        List<Neighbour> neighbours = keystore.get(label).parallelStream().map(neighbourPoint -> new Neighbour(neighbourPoint, JensenShannon.similarity(point.getVector(), neighbourPoint.getVector()))).filter(a -> a != null).collect(Collectors.toList());
+        List<Point> partial = keystore.get(label);
+        List<Neighbour> neighbours = partial.parallelStream().map(neighbourPoint -> new Neighbour(neighbourPoint, JensenShannon.similarity(point.getVector(), neighbourPoint.getVector()))).filter(a -> a != null).collect(Collectors.toList());
 
         List<Neighbour> topNeighbours = neighbours.parallelStream().sorted((a, b) -> -a.getScore().compareTo(b.getScore())).limit(size).collect(Collectors.toList());
 
@@ -61,6 +62,12 @@ public abstract class AbstractKeyValueAlgorithm implements ClustererAlgorithm {
         neighbourhood.setReference(point);
         neighbourhood.setClosestNeighbours(topNeighbours);
         return neighbourhood;
+    }
+
+    @Override
+    public boolean close(){
+        this.keystore.close();
+        return true;
     }
 
     public abstract String getCluster(Point point);

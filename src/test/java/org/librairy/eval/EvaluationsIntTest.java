@@ -21,50 +21,54 @@ public class EvaluationsIntTest {
 
     @Test
     public void test1(){
-        runTest("test1",Arrays.asList(new ClustererAlgorithm[]{new CRDCAlgorithm(0.1), new ADimAlgorithm(0.001)}),25);
+        runTest("test1",Arrays.asList(new ClustererAlgorithm[]{
+                        new CRDCAlgorithm(0.05),
+                        new CRDCAlgorithm(0.1),
+                        new ADimAlgorithm(0.001)}),
+                        25);
     }
 
     @Test
     public void test2(){
         runTest("test2",Arrays.asList(new ClustererAlgorithm[]{
-                new CRDCAlgorithm(0.05),
-                new CRDCAlgorithm(0.1),
-                new CRDCAlgorithm(0.2),
-                new ADimAlgorithm(0.05),
-                new ADimAlgorithm(0.1),
-                new ADimAlgorithm(0.2)}
-        ),25);
+                        new CRDCAlgorithm(0.05),
+                        new CRDCAlgorithm(0.1),
+                        new CRDCAlgorithm(0.2),
+                        new ADimAlgorithm(0.05),
+                        new ADimAlgorithm(0.1),
+                        new ADimAlgorithm(0.2)}),
+                        25);
     }
 
-    @Test
-    public void test3(){
-        runTest("test3",Arrays.asList(new ClustererAlgorithm[]{new CRDCAlgorithm(0.2), new ADimAlgorithm(0.1)}),25);
-    }
-
-    @Test
-    public void test4(){
-        runTest("test4",Arrays.asList(new ClustererAlgorithm[]{new CRDCAlgorithm(0.2), new ADimAlgorithm(0.1)}),25);
-    }
-
-    @Test
-    public void test5(){
-        runTest("test5",Arrays.asList(new ClustererAlgorithm[]{new CRDCAlgorithm(0.2), new ADimAlgorithm(0.1)}),25);
-    }
-
-    @Test
-    public void test6(){
-        runTest("test6",Arrays.asList(new ClustererAlgorithm[]{new CRDCAlgorithm(0.2), new ADimAlgorithm(0.1)}),25);
-    }
-
-    @Test
-    public void test7(){
-        runTest("test7",Arrays.asList(new ClustererAlgorithm[]{new CRDCAlgorithm(0.2), new ADimAlgorithm(0.1)}),25);
-    }
-
-    @Test
-    public void test8(){
-        runTest("test8",Arrays.asList(new ClustererAlgorithm[]{new CRDCAlgorithm(0.2), new ADimAlgorithm(0.1)}),25);
-    }
+//    @Test
+//    public void test3(){
+//        runTest("test3",Arrays.asList(new ClustererAlgorithm[]{new CRDCAlgorithm(0.2), new ADimAlgorithm(0.1)}),25);
+//    }
+//
+//    @Test
+//    public void test4(){
+//        runTest("test4",Arrays.asList(new ClustererAlgorithm[]{new CRDCAlgorithm(0.2), new ADimAlgorithm(0.1)}),25);
+//    }
+//
+//    @Test
+//    public void test5(){
+//        runTest("test5",Arrays.asList(new ClustererAlgorithm[]{new CRDCAlgorithm(0.2), new ADimAlgorithm(0.1)}),25);
+//    }
+//
+//    @Test
+//    public void test6(){
+//        runTest("test6",Arrays.asList(new ClustererAlgorithm[]{new CRDCAlgorithm(0.2), new ADimAlgorithm(0.1)}),25);
+//    }
+//
+//    @Test
+//    public void test7(){
+//        runTest("test7",Arrays.asList(new ClustererAlgorithm[]{new CRDCAlgorithm(0.2), new ADimAlgorithm(0.1)}),25);
+//    }
+//
+//    @Test
+//    public void test8(){
+//        runTest("test8",Arrays.asList(new ClustererAlgorithm[]{new CRDCAlgorithm(0.2), new ADimAlgorithm(0.1)}),25);
+//    }
 
     private void runTest(String testId,List<ClustererAlgorithm> algorithms, Integer size){
         LOG.info("Running evaluation "+ testId + ":");
