@@ -1,6 +1,7 @@
 package org.librairy.eval.model;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.io.FileUtils;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.core.WhitespaceTokenizer;
@@ -21,6 +22,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -55,7 +59,7 @@ public class KeyStore {
         try {
             File indexFile = new File(path);
             this.jsonMapper = new ObjectMapper();
-            if (indexFile.exists()) indexFile.delete();
+            FileUtils.deleteDirectory(indexFile);
             this.directory = FSDirectory.open(indexFile.toPath());
             IndexWriterConfig writerConfig = new IndexWriterConfig(analyzer);
             writerConfig.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
@@ -63,6 +67,7 @@ public class KeyStore {
             this.indexWriter = new IndexWriter(directory, writerConfig);
             this.counter = new AtomicInteger();
         } catch (Exception e) {
+            LOG.error("Unexpected error creating keystore",e);
             new RuntimeException(e);
         }
     }
@@ -119,6 +124,14 @@ public class KeyStore {
             }).filter(a -> a != null).collect(Collectors.toList());
         }catch (Exception e){
             throw new RuntimeException(e);
+        }
+    }
+
+    public void close(){
+        try {
+            this.indexWriter.close();
+        } catch (IOException e) {
+            LOG.error("Unexpected error closing index", e);
         }
     }
 
