@@ -4,6 +4,7 @@ import org.junit.Test;
 import org.librairy.eval.algorithms.ADimAlgorithm;
 import org.librairy.eval.algorithms.CRDCAlgorithm;
 import org.librairy.eval.algorithms.ClustererAlgorithm;
+import org.librairy.eval.algorithms.PivotAlgorithm;
 import org.librairy.eval.model.Evaluation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +30,8 @@ public class EvaluationsIntTest {
                 new ADimAlgorithm(0.01),
                 new ADimAlgorithm(0.05),
                 new ADimAlgorithm(0.1),
-                new ADimAlgorithm(0.5)
+                new ADimAlgorithm(0.5),
+                new PivotAlgorithm(20)
         }), 25);
     }
 
@@ -43,7 +45,8 @@ public class EvaluationsIntTest {
                 new ADimAlgorithm(0.01),
                 new ADimAlgorithm(0.05),
                 new ADimAlgorithm(0.1),
-                new ADimAlgorithm(0.5)
+                new ADimAlgorithm(0.5),
+                new PivotAlgorithm(200)
         }), 25);
     }
 
@@ -57,7 +60,8 @@ public class EvaluationsIntTest {
                 new ADimAlgorithm(0.01),
                 new ADimAlgorithm(0.05),
                 new ADimAlgorithm(0.1),
-                new ADimAlgorithm(0.5)
+                new ADimAlgorithm(0.5),
+                new PivotAlgorithm(20)
         }), 25);
     }
 
@@ -71,7 +75,8 @@ public class EvaluationsIntTest {
                 new ADimAlgorithm(0.01),
                 new ADimAlgorithm(0.05),
                 new ADimAlgorithm(0.1),
-                new ADimAlgorithm(0.5)
+                new ADimAlgorithm(0.5),
+                new PivotAlgorithm(200)
         }), 25);
     }
 
@@ -85,7 +90,8 @@ public class EvaluationsIntTest {
                 new ADimAlgorithm(0.01),
                 new ADimAlgorithm(0.05),
                 new ADimAlgorithm(0.1),
-                new ADimAlgorithm(0.5)
+                new ADimAlgorithm(0.5),
+                new PivotAlgorithm(20)
         }), 25);
     }
 
@@ -99,7 +105,8 @@ public class EvaluationsIntTest {
                 new ADimAlgorithm(0.01),
                 new ADimAlgorithm(0.05),
                 new ADimAlgorithm(0.1),
-                new ADimAlgorithm(0.5)
+                new ADimAlgorithm(0.5),
+                new PivotAlgorithm(200)
         }), 25);
     }
 
@@ -113,7 +120,8 @@ public class EvaluationsIntTest {
                 new ADimAlgorithm(0.01),
                 new ADimAlgorithm(0.05),
                 new ADimAlgorithm(0.1),
-                new ADimAlgorithm(0.5)
+                new ADimAlgorithm(0.5),
+                new PivotAlgorithm(20)
         }), 25);
     }
 
@@ -127,7 +135,8 @@ public class EvaluationsIntTest {
                 new ADimAlgorithm(0.01),
                 new ADimAlgorithm(0.05),
                 new ADimAlgorithm(0.1),
-                new ADimAlgorithm(0.5)
+                new ADimAlgorithm(0.5),
+                new PivotAlgorithm(200)
         }), 25);
     }
 
